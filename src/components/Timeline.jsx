@@ -12,6 +12,9 @@ const Timeline = ({ data }) => {
   const svgRef = useRef();
   const containerRef = useRef();
   const [selectedItem, setSelectedItem] = useState(null);
+  const [renderError, setRenderError] = useState(null);
+  const [isDrawing, setIsDrawing] = useState(false);
+  const [drawError, setDrawError] = useState(null);
   
   // タイムラインの基本設定
   const margin = { top: 20, right: 30, bottom: 40, left: 150 };
@@ -62,12 +65,23 @@ const Timeline = ({ data }) => {
     return content;
   };
 
-  const drawTimeline = () => {
-    // データの妥当性チェック
-    if (!validateTimelineData(data)) {
-      console.error('Invalid timeline data');
-      return;
-    }
+  const drawTimeline = async () => {
+    setIsDrawing(true);
+    setDrawError(null);
+    
+    try {
+      // データの妥当性チェック
+      if (!validateTimelineData(data)) {
+        console.error('Invalid timeline data:', data);
+        throw new Error('タイムラインデータが無効です');
+      }
+      
+      if (!svgRef.current) {
+        throw new Error('SVG要素が見つかりません');
+      }
+      
+      // 描画処理の遅延（大量データ対応）
+      await new Promise(resolve => setTimeout(resolve, 50));
     
     // SVG要素をクリア
     const svg = d3.select(svgRef.current);
@@ -350,6 +364,44 @@ const Timeline = ({ data }) => {
     console.log('Detail labels drawn:', detailLabels.size(), 'items');
     console.log('Category icons drawn:', categoryIcons.size(), 'items');
     console.log('Zoom functionality enabled');
+    
+    } catch (error) {
+      console.error('Timeline drawing error:', error);
+      setDrawError(error.message || 'タイムラインの描画でエラーが発生しました');
+      
+      // エラー表示用のSVG要素を作成
+      if (svgRef.current) {
+        const svg = d3.select(svgRef.current);
+        svg.selectAll("*").remove();
+        
+        const errorGroup = svg.append("g")
+          .attr("transform", `translate(${width/2}, ${height/2})`);
+        
+        errorGroup.append("text")
+          .attr("text-anchor", "middle")
+          .attr("dy", "-20")
+          .style("font-size", "18px")
+          .style("fill", "#dc3545")
+          .style("font-weight", "bold")
+          .text("⚠️ タイムラインの描画でエラーが発生しました");
+        
+        errorGroup.append("text")
+          .attr("text-anchor", "middle")
+          .attr("dy", "10")
+          .style("font-size", "14px")
+          .style("fill", "#6c757d")
+          .text(error.message || 'データの読み込みに失敗しました');
+        
+        errorGroup.append("text")
+          .attr("text-anchor", "middle")
+          .attr("dy", "35")
+          .style("font-size", "12px")
+          .style("fill", "#6c757d")
+          .text("ページを再読み込みしてください");
+      }
+    } finally {
+      setIsDrawing(false);
+    }
   };
 
   useEffect(() => {
@@ -372,7 +424,7 @@ const Timeline = ({ data }) => {
       // 既存のツールチップを削除
       d3.select(containerRef.current).selectAll('.timeline-tooltip').remove();
     };
-  }, [data]);
+  }, [data, drawTimeline]);
   
   // 詳細パネルを閉じる関数
   const closeDetailPanel = () => {
@@ -391,6 +443,20 @@ const Timeline = ({ data }) => {
       <div className="timeline-header">
         <h2>歴史タイムライン</h2>
         <p>データ項目数: {data ? data.length : 0}</p>
+        {isDrawing && (
+          <p className="drawing-status">
+            <span className="loading-spinner-small"></span>
+            タイムラインを描画中...
+          </p>
+        )}
+        {drawError && (
+          <p className="draw-error">
+            ⚠️ {drawError}
+            <button onClick={() => {setDrawError(null); drawTimeline();}} className="retry-button">
+              再試行
+            </button>
+          </p>
+        )}
         {selectedItem && (
           <p className="selected-info">
             選択中: <strong>{selectedItem.title}</strong>

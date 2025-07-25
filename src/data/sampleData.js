@@ -2,36 +2,6 @@
 export const sampleData = [
   // 日本の歴史人物
   {
-    title: "織田信長",
-    category: "people",
-    start: 1534,
-    end: 1582,
-    events: [
-      { start: 1560, content: "桶狭間の戦い" },
-      { start: 1568, content: "上洛" },
-      { start: 1573, content: "室町幕府滅亡" },
-      { start: 1582, content: "本能寺の変" }
-    ],
-    birth: "1534年6月23日",
-    dead: "1582年6月21日",
-    imageUrl: "/images/nobunaga.jpg"
-  },
-  {
-    title: "豊臣秀吉",
-    category: "people",
-    start: 1537,
-    end: 1598,
-    events: [
-      { start: 1582, content: "山崎の戦い" },
-      { start: 1583, content: "賤ヶ岳の戦い" },
-      { start: 1590, content: "天下統一" },
-      { start: 1592, content: "朝鮮出兵開始" }
-    ],
-    birth: "1537年3月17日",
-    dead: "1598年9月18日",
-    imageUrl: "/images/hideyoshi.jpg"
-  },
-  {
     title: "徳川家康",
     category: "people",
     start: 1543,

@@ -255,6 +255,55 @@
   opacity: 0.9;
 }
 
+/* 描画状態表示 */
+.drawing-status {
+  color: #007acc;
+  font-size: 0.9rem;
+  margin-top: 5px;
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  font-weight: 500;
+}
+
+.loading-spinner-small {
+  width: 16px;
+  height: 16px;
+  border: 2px solid #f3f3f3;
+  border-top: 2px solid #007acc;
+  border-radius: 50%;
+  animation: spin 1s linear infinite;
+}
+
+.draw-error {
+  color: #dc3545;
+  font-size: 0.9rem;
+  margin-top: 5px;
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  font-weight: 500;
+  background-color: #f8d7da;
+  padding: 8px 12px;
+  border-radius: 6px;
+  border: 1px solid #f5c6cb;
+}
+
+.retry-button {
+  background-color: #dc3545;
+  color: white;
+  border: none;
+  padding: 4px 8px;
+  border-radius: 4px;
+  font-size: 0.8rem;
+  cursor: pointer;
+  transition: background-color 0.2s ease;
+}
+
+.retry-button:hover {
+  background-color: #c82333;
+}
+
 /* 選択情報表示 */
 .selected-info {
   color: #007acc;
@@ -470,6 +519,52 @@
   cursor: grabbing;
 }
 
+/* タイムラインエラー表示 */
+.timeline-error {
+  text-align: center;
+  padding: 60px 20px;
+  background: linear-gradient(135deg, #fff5f5 0%, #fed7d7 100%);
+  border: 2px solid #feb2b2;
+  border-radius: 12px;
+  margin: 20px 0;
+}
+
+.timeline-error .error-icon {
+  font-size: 3rem;
+  margin-bottom: 16px;
+}
+
+.timeline-error h3 {
+  color: #c53030;
+  margin-bottom: 12px;
+  font-size: 1.4rem;
+}
+
+.timeline-error .error-message {
+  color: #744210;
+  margin-bottom: 20px;
+  font-size: 1rem;
+}
+
+.retry-timeline-button {
+  background: linear-gradient(135deg, #e53e3e, #c53030);
+  color: white;
+  border: none;
+  padding: 10px 20px;
+  border-radius: 6px;
+  cursor: pointer;
+  font-size: 0.9rem;
+  font-weight: 500;
+  transition: all 0.3s ease;
+  box-shadow: 0 2px 4px rgba(229, 62, 62, 0.3);
+}
+
+.retry-timeline-button:hover {
+  background: linear-gradient(135deg, #c53030, #9c2626);
+  transform: translateY(-1px);
+  box-shadow: 0 4px 8px rgba(229, 62, 62, 0.4);
+}
+
 /* レスポンシブ対応 */
 @media (max-width: 768px) {
   .timeline-footer {
@@ -483,6 +578,15 @@
   
   .controls-text {
     font-size: 0.8rem;
+  }
+  
+  .detail-panel {
+    width: 100%;
+    max-width: 350px;
+  }
+  
+  .timeline-content {
+    flex-direction: column;
   }
 }
 
