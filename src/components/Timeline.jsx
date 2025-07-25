@@ -1,4 +1,10 @@
-import React, { useEffect, useRef, useState } from "react";
+import React, {
+  useEffect,
+  useRef,
+  useState,
+  useCallback,
+  useMemo,
+} from "react";
 import * as d3 from "d3";
 import {
   validateTimelineData,
@@ -8,7 +14,7 @@ import {
 } from "../utils/timelineUtils";
 import "../styles/Timeline.css";
 
-const Timeline = ({ data }) => {
+const Timeline = React.memo(({ data }) => {
   const svgRef = useRef();
   const containerRef = useRef();
   const [selectedItem, setSelectedItem] = useState(null);
@@ -16,11 +22,23 @@ const Timeline = ({ data }) => {
   const [isDrawing, setIsDrawing] = useState(false);
   const [drawError, setDrawError] = useState(null);
 
+  // データの前処理をメモ化
+  const processedData = useMemo(() => {
+    if (!data || !validateTimelineData(data)) {
+      return { sortedData: [], timeRange: { minYear: 0, maxYear: 0 } };
+    }
+
+    const sortedData = sortDataByStartYear(data);
+    const timeRange = calculateTimeRange(sortedData);
+
+    return { sortedData, timeRange };
+  }, [data]);
+
   // タイムラインの基本設定（動的サイズ）
   const margin = { top: 20, right: 30, bottom: 60, left: 150 };
   const [dimensions, setDimensions] = useState({ width: 1000, height: 500 });
 
-  const updateDimensions = () => {
+  const updateDimensions = useCallback(() => {
     if (containerRef.current) {
       const containerRect = containerRef.current.getBoundingClientRect();
       const availableWidth = Math.max(800, window.innerWidth - 80);
@@ -31,12 +49,12 @@ const Timeline = ({ data }) => {
         height: availableHeight - margin.top - margin.bottom,
       });
     }
-  };
+  }, [margin.left, margin.right, margin.top, margin.bottom]);
 
   const { width, height } = dimensions;
 
-  // ツールチップの内容を作成する関数
-  const createTooltipContent = (d) => {
+  // ツールチップの内容を作成する関数（メモ化）
+  const createTooltipContent = useCallback((d) => {
     const duration = d.end - d.start;
     const categoryText = d.category === "people" ? "人物" : "組織";
 
@@ -79,16 +97,16 @@ const Timeline = ({ data }) => {
     }
 
     return content;
-  };
+  }, []);
 
-  const drawTimeline = async () => {
+  const drawTimeline = useCallback(async () => {
     setIsDrawing(true);
     setDrawError(null);
 
     try {
       // データの妥当性チェック
-      if (!validateTimelineData(data)) {
-        console.error("Invalid timeline data:", data);
+      if (processedData.sortedData.length === 0) {
+        console.error("No valid timeline data");
         throw new Error("タイムラインデータが無効です");
       }
 
@@ -97,7 +115,7 @@ const Timeline = ({ data }) => {
       }
 
       // 描画処理の遅延（大量データ対応）
-      await new Promise((resolve) => setTimeout(resolve, 50));
+      await new Promise((resolve) => setTimeout(resolve, 30));
 
       // SVG要素をクリア
       const svg = d3.select(svgRef.current);
@@ -112,11 +130,9 @@ const Timeline = ({ data }) => {
         .style("position", "absolute")
         .style("pointer-events", "none");
 
-      // データの前処理とソート
-      const sortedData = sortDataByStartYear(data);
-
-      // 時間範囲の計算
-      const { minYear, maxYear } = calculateTimeRange(sortedData);
+      // 前処理済みデータを使用
+      const { sortedData, timeRange } = processedData;
+      const { minYear, maxYear } = timeRange;
 
       // 時間軸スケールの設定
       const xScale = d3
@@ -453,7 +469,7 @@ const Timeline = ({ data }) => {
     } finally {
       setIsDrawing(false);
     }
-  };
+  }, [processedData, dimensions, width, height, createTooltipContent]);
 
   useEffect(() => {
     // 初期サイズ設定
@@ -488,8 +504,8 @@ const Timeline = ({ data }) => {
     }
   }, [dimensions]);
 
-  // 詳細パネルを閉じる関数
-  const closeDetailPanel = () => {
+  // 詳細パネルを閉じる関数（メモ化）
+  const closeDetailPanel = useCallback(() => {
     setSelectedItem(null);
 
     // 全てのバーのスタイルを元に戻す
@@ -499,7 +515,7 @@ const Timeline = ({ data }) => {
       .style("opacity", 0.8)
       .attr("stroke-width", 1)
       .attr("stroke", "#fff");
-  };
+  }, []);
 
   return (
     <div ref={containerRef} className="timeline-wrapper">
@@ -652,6 +668,6 @@ const Timeline = ({ data }) => {
       </div>
     </div>
   );
-};
+});
 
 export default Timeline;

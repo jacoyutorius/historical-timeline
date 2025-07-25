@@ -3,7 +3,7 @@ import Timeline from "./components/Timeline";
 import { sampleData } from "./data/sampleData";
 import "./App.css";
 
-const App = () => {
+const App = React.memo(() => {
   const [timelineData, setTimelineData] = useState([]);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState(null);
@@ -165,6 +165,6 @@ const App = () => {
       </main>
     </div>
   );
-};
+});
 
 export default App;
