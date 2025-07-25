@@ -60,7 +60,8 @@ const Timeline = ({ data }) => {
       </div>
       
       <div className="timeline-legend">
-        <div className="legend-item"></div> <div className="legend-color people"></div>
+        <div className="legend-item">
+          <div className="legend-color people"></div>
           <span>人物</span>
         </div>
         <div className="legend-item">
