@@ -56,9 +56,38 @@ const Timeline = ({ data }) => {
       .attr("class", "timeline-container")
       .attr("transform", `translate(${margin.left},${margin.top})`);
     
-    // 軸用のグループを作成
-    const xAxisGroup = g.append("g").attr("class", "x-axis");
-    const yAxisGroup = g.append("g").attr("class", "y-axis");
+    // X軸の作成と描画
+    const xAxis = d3.axisBottom(xScale)
+      .tickFormat(d3.timeFormat("%Y"))
+      .ticks(d3.timeYear.every(50)); // 50年間隔でティック
+    
+    const xAxisGroup = g.append("g")
+      .attr("class", "x-axis")
+      .attr("transform", `translate(0, ${height})`)
+      .call(xAxis);
+    
+    // X軸のラベル
+    xAxisGroup.append("text")
+      .attr("class", "axis-label")
+      .attr("x", width / 2)
+      .attr("y", 35)
+      .style("text-anchor", "middle")
+      .style("fill", "#666")
+      .style("font-size", "12px")
+      .text("年代");
+    
+    // Y軸の作成と描画
+    const yAxis = d3.axisLeft(yScale)
+      .tickSize(0)
+      .tickPadding(10);
+    
+    const yAxisGroup = g.append("g")
+      .attr("class", "y-axis")
+      .call(yAxis);
+    
+    // Y軸のティックラインを削除（人物名のみ表示）
+    yAxisGroup.selectAll(".tick line").remove();
+    yAxisGroup.selectAll(".domain").remove();
     
     // データバー用のグループを作成
     g.append("g").attr("class", "person-bars");
@@ -66,23 +95,32 @@ const Timeline = ({ data }) => {
     // ラベル用のグループを作成
     g.append("g").attr("class", "labels");
     
+    // グリッドラインの追加（オプション）
+    const gridLines = g.append("g")
+      .attr("class", "grid-lines")
+      .selectAll("line")
+      .data(xScale.ticks(d3.timeYear.every(50)))
+      .enter()
+      .append("line")
+      .attr("x1", d => xScale(d))
+      .attr("x2", d => xScale(d))
+      .attr("y1", 0)
+      .attr("y2", height)
+      .style("stroke", "#e0e0e0")
+      .style("stroke-width", 1)
+      .style("stroke-dasharray", "2,2");
+    
     // スケール情報をコンソールに出力（デバッグ用）
     console.log('Timeline initialized with data:', sortedData.length, 'items');
     console.log('Time range:', minYear, '-', maxYear);
-    console.log('X scale domain:', xScale.domain());
-    console.log('Y scale domain:', yScale.domain());
-    console.log('Color scale:', colorScale.domain(), colorScale.range());
-    
-    // スケールをコンポーネント内で利用できるように保存
-    // （次のタスクで軸描画に使用）
-    window.timelineScales = { xScale, yScale, colorScale, sortedData };
+    console.log('Axes drawn successfully');
   };
 
   useEffect(() => {
     if (data && data.length > 0) {
       drawTimeline();
     }
-  }, [data, drawTimeline]);
+  }, [data]);
   
   return (
     <div ref={containerRef} className="timeline-wrapper">
