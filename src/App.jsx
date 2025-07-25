@@ -1,4 +1,5 @@
 import React, { useState, useEffect } from 'react';
+import Timeline from './components/Timeline';
 import { sampleData } from './data/sampleData';
 import './App.css';
 
@@ -65,20 +66,19 @@ const App = () => {
           <p>データ読み込み完了: {timelineData.length}件の項目</p>
         </div>
         
-        {/* Timeline コンポーネントは次のタスクで実装 */}
-        <div className="timeline-placeholder">
-          <p>タイムラインコンポーネントをここに表示予定</p>
-          <div className="data-preview">
-            <h3>読み込まれたデータ:</h3>
-            <ul>
-              {timelineData.slice(0, 5).map((item, index) => (
-                <li key={index}>
-                  {item.title} ({item.start}-{item.end}) - {item.category}
-                </li>
-              ))}
-              {timelineData.length > 5 && <li>...他 {timelineData.length - 5}件</li>}
-            </ul>
-          </div>
+        {/* Timeline コンポーネント */}
+        <Timeline data={timelineData} />
+        
+        <div className="data-preview">
+          <h3>読み込まれたデータ:</h3>
+          <ul>
+            {timelineData.slice(0, 5).map((item, index) => (
+              <li key={index}>
+                {item.title} ({item.start}-{item.end}) - {item.category}
+              </li>
+            ))}
+            {timelineData.length > 5 && <li>...他 {timelineData.length - 5}件</li>}
+          </ul>
         </div>
       </main>
     </div>
