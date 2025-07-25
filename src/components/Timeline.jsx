@@ -394,32 +394,64 @@ const Timeline = React.memo(({ data }) => {
         .on("mouseover", function (event, d) {
           d3.select(this).attr("r", 5).style("opacity", 1);
 
-          // イベント専用ツールチップを表示
+          // イベント専用ツールチップを表示（コンパクト版）
           const eventTooltipContent = `
-            <div class="tooltip-header">
-              <span class="tooltip-icon">${
-                d.personCategory === "people" ? "📅" : "🏛️"
-              }</span>
-              <strong>${d.content}</strong>
-            </div>
-            <div class="tooltip-period">
-              <strong>発生年:</strong> ${d.start}年
-            </div>
-            <div class="tooltip-person">
-              <strong>関連:</strong> ${d.personTitle}
+            <div class="event-tooltip-content">
+              <div class="event-title">
+                <span class="event-icon">${
+                  d.personCategory === "people" ? "📅" : "🏛️"
+                }</span>
+                <strong>${d.content}</strong>
+              </div>
+              <div class="event-details">
+                <span class="event-year">${d.start}年</span> • 
+                <span class="event-person">${d.personTitle}</span>
+              </div>
             </div>
           `;
+
+          // ツールチップの位置を動的に調整
+          const tooltipWidth = 250; // 推定ツールチップ幅
+          const tooltipHeight = 80; // 推定ツールチップ高さ
+
+          let left = event.pageX + 5;
+          let top = event.pageY - 40;
+
+          // 右端チェック
+          if (left + tooltipWidth > window.innerWidth) {
+            left = event.pageX - tooltipWidth - 5;
+          }
+
+          // 上端チェック
+          if (top < 0) {
+            top = event.pageY + 15;
+          }
 
           tooltip
             .html(eventTooltipContent)
             .style("opacity", 1)
-            .style("left", event.pageX + 10 + "px")
-            .style("top", event.pageY - 10 + "px");
+            .style("left", left + "px")
+            .style("top", top + "px");
         })
         .on("mousemove", function (event, d) {
-          tooltip
-            .style("left", event.pageX + 10 + "px")
-            .style("top", event.pageY - 10 + "px");
+          // ツールチップの位置を動的に調整
+          const tooltipWidth = 250;
+          const tooltipHeight = 80;
+
+          let left = event.pageX + 5;
+          let top = event.pageY - 40;
+
+          // 右端チェック
+          if (left + tooltipWidth > window.innerWidth) {
+            left = event.pageX - tooltipWidth - 5;
+          }
+
+          // 上端チェック
+          if (top < 0) {
+            top = event.pageY + 15;
+          }
+
+          tooltip.style("left", left + "px").style("top", top + "px");
         })
         .on("mouseout", function (event, d) {
           d3.select(this).attr("r", 3).style("opacity", 0.8);
