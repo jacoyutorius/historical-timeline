@@ -299,6 +299,48 @@ const Timeline = ({ data }) => {
     // グリッドラインの追加（オプション）
     
     
+    // ズーム機能の設定
+    const zoom = d3.zoom()
+      .scaleExtent([0.5, 10]) // ズーム範囲: 0.5倍〜10倍
+      .translateExtent([[-width * 2, -height], [width * 3, height * 2]]) // パン範囲制限
+      .on("zoom", function(event) {
+        const { transform } = event;
+        
+        // X軸スケールを更新
+        const newXScale = transform.rescaleX(xScale);
+        
+        // X軸を再描画
+        xAxisGroup.call(d3.axisBottom(newXScale).tickFormat(d3.timeFormat("%Y")));
+        
+        // バーの位置とサイズを更新
+        barsGroup.selectAll(".person-bar")
+          .attr("x", d => newXScale(yearToDate(d.start)))
+          .attr("width", d => newXScale(yearToDate(d.end, true)) - newXScale(yearToDate(d.start)));
+        
+        // バー内ラベルの位置を更新
+        labelsGroup.selectAll(".bar-label")
+          .attr("x", d => {
+            const barStart = newXScale(yearToDate(d.start));
+            const barWidth = newXScale(yearToDate(d.end, true)) - barStart;
+            return barStart + barWidth / 2;
+          })
+          .style("opacity", function(d) {
+            const barWidth = newXScale(yearToDate(d.end, true)) - newXScale(yearToDate(d.start));
+            return barWidth > 80 ? 1 : 0;
+          });
+        
+        // 詳細ラベルの位置を更新
+        labelsGroup.selectAll(".detail-label")
+          .attr("x", d => newXScale(yearToDate(d.end, true)) + 5)
+          .style("opacity", function(d) {
+            const barEnd = newXScale(yearToDate(d.end, true));
+            return barEnd < width - 100 ? 0.7 : 0;
+          });
+      });
+
+    // SVGにズーム機能を適用
+    svg.call(zoom);
+
     // スケール情報をコンソールに出力（デバッグ用）
     console.log('Timeline initialized with data:', sortedData.length, 'items');
     console.log('Time range:', minYear, '-', maxYear);
@@ -307,6 +349,7 @@ const Timeline = ({ data }) => {
     console.log('Bar labels drawn:', labels.size(), 'items');
     console.log('Detail labels drawn:', detailLabels.size(), 'items');
     console.log('Category icons drawn:', categoryIcons.size(), 'items');
+    console.log('Zoom functionality enabled');
   };
 
   useEffect(() => {
@@ -319,7 +362,7 @@ const Timeline = ({ data }) => {
       // 既存のツールチップを削除
       d3.select(containerRef.current).selectAll('.timeline-tooltip').remove();
     };
-  }, [data]);
+  }, [data, drawTimeline]);
   
   // 詳細パネルを閉じる関数
   const closeDetailPanel = () => {
@@ -412,14 +455,35 @@ const Timeline = ({ data }) => {
         )}
       </div>
       
-      <div className="timeline-legend">
-        <div className="legend-item">
-          <div className="legend-color people"></div>
-          <span>人物</span>
+      <div className="timeline-footer">
+        <div className="timeline-legend">
+          <div className="legend-item">
+            <div className="legend-color people"></div>
+            <span>人物</span>
+          </div>
+          <div className="legend-item">
+            <div className="legend-color organization"></div>
+            <span>組織</span>
+          </div>
         </div>
-        <div className="legend-item">
-          <div className="legend-color organization"></div>
-          <span>組織</span>
+        
+        <div className="timeline-controls">
+          <button 
+            onClick={() => {
+              const svg = d3.select(svgRef.current);
+              svg.transition().duration(750).call(
+                d3.zoom().transform,
+                d3.zoomIdentity
+              );
+            }}
+            className="reset-zoom-button"
+          >
+            ズームリセット
+          </button>
+          <p className="controls-text">
+            <strong>操作方法:</strong> 
+            マウスホイールでズーム、ドラッグでパン、バークリックで詳細表示
+          </p>
         </div>
       </div>
     </div>

@@ -381,6 +381,74 @@
   box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
 }
 
+/* タイムラインフッター */
+.timeline-footer {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-top: 20px;
+  padding-top: 15px;
+  border-top: 1px solid #e0e0e0;
+  flex-wrap: wrap;
+  gap: 15px;
+}
+
+.timeline-controls {
+  flex: 1;
+  text-align: right;
+  display: flex;
+  flex-direction: column;
+  align-items: flex-end;
+  gap: 8px;
+}
+
+.reset-zoom-button {
+  background-color: #007acc;
+  color: white;
+  border: none;
+  padding: 6px 12px;
+  border-radius: 4px;
+  font-size: 0.85rem;
+  cursor: pointer;
+  transition: background-color 0.2s ease;
+}
+
+.reset-zoom-button:hover {
+  background-color: #005a9e;
+}
+
+.controls-text {
+  margin: 0;
+  font-size: 0.85rem;
+  color: #666;
+  font-style: italic;
+}
+
+/* ズーム時のカーソル */
+.timeline-svg {
+  cursor: grab;
+}
+
+.timeline-svg:active {
+  cursor: grabbing;
+}
+
+/* レスポンシブ対応 */
+@media (max-width: 768px) {
+  .timeline-footer {
+    flex-direction: column;
+    align-items: flex-start;
+  }
+  
+  .timeline-controls {
+    text-align: left;
+  }
+  
+  .controls-text {
+    font-size: 0.8rem;
+  }
+}
+
 .labels text {
   font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', 'Roboto', sans-serif;
   font-size: 11px;
