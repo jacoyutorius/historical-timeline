@@ -1,4 +1,4 @@
-import React, { useEffect, useRef } from 'react';
+import React, { useEffect, useRef, useState } from 'react';
 import * as d3 from 'd3';
 import { 
   validateTimelineData, 
@@ -11,6 +11,7 @@ import '../styles/Timeline.css';
 const Timeline = ({ data }) => {
   const svgRef = useRef();
   const containerRef = useRef();
+  const [selectedItem, setSelectedItem] = useState(null);
   
   // タイムラインの基本設定
   const margin = { top: 20, right: 30, bottom: 40, left: 150 };
@@ -200,7 +201,7 @@ const Timeline = ({ data }) => {
           .style("left", (event.pageX + 10) + "px")
           .style("top", (event.pageY - 10) + "px");
       })
-      .on("mousemove", function(event, d) {
+      .on("mousemove", function(event) {
         // マウス移動に合わせてツールチップを移動
         tooltip
           .style("left", (event.pageX + 10) + "px")
@@ -214,6 +215,22 @@ const Timeline = ({ data }) => {
         
         // ツールチップを非表示
         tooltip.style("opacity", 0);
+      })
+      .on("click", function(event, d) {
+        // 詳細パネルを表示
+        setSelectedItem(d);
+        
+        // ツールチップを非表示
+        tooltip.style("opacity", 0);
+        
+        // クリックされたバーを強調
+        barsGroup.selectAll(".person-bar")
+          .style("opacity", 0.3);
+        
+        d3.select(this)
+          .style("opacity", 1)
+          .attr("stroke-width", 3)
+          .attr("stroke", "#333");
       });
     
     // バー内のテキストラベル（期間表示）
@@ -304,22 +321,95 @@ const Timeline = ({ data }) => {
     };
   }, [data]);
   
+  // 詳細パネルを閉じる関数
+  const closeDetailPanel = () => {
+    setSelectedItem(null);
+    
+    // 全てのバーのスタイルを元に戻す
+    const svg = d3.select(svgRef.current);
+    svg.selectAll(".person-bar")
+      .style("opacity", 0.8)
+      .attr("stroke-width", 1)
+      .attr("stroke", "#fff");
+  };
+
   return (
     <div ref={containerRef} className="timeline-wrapper">
       <div className="timeline-header">
         <h2>歴史タイムライン</h2>
         <p>データ項目数: {data ? data.length : 0}</p>
+        {selectedItem && (
+          <p className="selected-info">
+            選択中: <strong>{selectedItem.title}</strong>
+            <button onClick={closeDetailPanel} className="close-selection">×</button>
+          </p>
+        )}
       </div>
       
-      <div className="timeline-canvas">
-        <svg 
-          ref={svgRef} 
-          width={width + margin.left + margin.right} 
-          height={height + margin.top + margin.bottom}
-          className="timeline-svg"
-        >
-          {/* D3.jsによる描画がここに追加される */}
-        </svg>
+      <div className="timeline-content">
+        <div className="timeline-canvas">
+          <svg 
+            ref={svgRef} 
+            width={width + margin.left + margin.right} 
+            height={height + margin.top + margin.bottom}
+            className="timeline-svg"
+          >
+            {/* D3.jsによる描画がここに追加される */}
+          </svg>
+        </div>
+        
+        {selectedItem && (
+          <div className="detail-panel">
+            <div className="detail-panel-header">
+              <div className="detail-title">
+                <span className="detail-icon">
+                  {selectedItem.category === 'people' ? '👤' : '🏛️'}
+                </span>
+                <h3>{selectedItem.title}</h3>
+                <span className="detail-category">
+                  ({selectedItem.category === 'people' ? '人物' : '組織'})
+                </span>
+              </div>
+              <button onClick={closeDetailPanel} className="close-button">×</button>
+            </div>
+            
+            <div className="detail-panel-content">
+              <div className="detail-section">
+                <h4>基本情報</h4>
+                <p><strong>活動期間:</strong> {selectedItem.start}年 - {selectedItem.end}年 ({selectedItem.end - selectedItem.start}年間)</p>
+                {selectedItem.birth && <p><strong>生年月日:</strong> {selectedItem.birth}</p>}
+                {selectedItem.dead && <p><strong>没年月日:</strong> {selectedItem.dead}</p>}
+                {selectedItem.description && <p><strong>説明:</strong> {selectedItem.description}</p>}
+              </div>
+              
+              {selectedItem.events && selectedItem.events.length > 0 && (
+                <div className="detail-section">
+                  <h4>主要な出来事</h4>
+                  <ul className="events-list">
+                    {selectedItem.events.map((event, index) => (
+                      <li key={index}>
+                        <span className="event-year">{event.start}年</span>
+                        <span className="event-content">{event.content}</span>
+                      </li>
+                    ))}
+                  </ul>
+                </div>
+              )}
+              
+              {selectedItem.imageUrl && (
+                <div className="detail-section">
+                  <h4>画像</h4>
+                  <img 
+                    src={selectedItem.imageUrl} 
+                    alt={selectedItem.title}
+                    className="detail-image"
+                    onError={(e) => {e.target.style.display = 'none'}}
+                  />
+                </div>
+              )}
+            </div>
+          </div>
+        )}
       </div>
       
       <div className="timeline-legend">
