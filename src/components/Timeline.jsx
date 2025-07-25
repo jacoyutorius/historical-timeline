@@ -79,7 +79,7 @@ const Timeline = ({ data }) => {
     // Y軸の作成と描画
     const yAxis = d3.axisLeft(yScale)
       .tickSize(0)
-      .tickPadding(10);
+      .tickPadding(25); // アイコン用のスペースを確保
     
     const yAxisGroup = g.append("g")
       .attr("class", "y-axis")
@@ -88,6 +88,26 @@ const Timeline = ({ data }) => {
     // Y軸のティックラインを削除（人物名のみ表示）
     yAxisGroup.selectAll(".tick line").remove();
     yAxisGroup.selectAll(".domain").remove();
+    
+    // カテゴリアイコンの追加
+    const categoryIcons = yAxisGroup.selectAll(".category-icon")
+      .data(sortedData)
+      .enter()
+      .append("text")
+      .attr("class", "category-icon")
+      .attr("x", -20)
+      .attr("y", d => yScale(d.title) + yScale.bandwidth() / 2)
+      .attr("dy", "0.35em")
+      .style("text-anchor", "middle")
+      .style("font-size", "14px")
+      .style("fill", d => colorScale(d.category))
+      .text(d => d.category === 'people' ? '👤' : '🏛️');
+    
+    // 人物名のスタイル改善
+    yAxisGroup.selectAll(".tick text")
+      .style("font-weight", "500")
+      .style("fill", "#333")
+      .attr("class", d => `name-label ${sortedData.find(item => item.title === d)?.category}`);
     
     // データバーの描画
     const barsGroup = g.append("g").attr("class", "person-bars");
@@ -117,7 +137,7 @@ const Timeline = ({ data }) => {
           .style("opacity", 1)
           .attr("stroke-width", 2);
       })
-      .on("mouseout", function(event, d) {
+      .on("mouseout", function(event) {
         d3.select(this)
           .style("opacity", 0.8)
           .attr("stroke-width", 1);
@@ -157,6 +177,35 @@ const Timeline = ({ data }) => {
         return barWidth > 80 ? 1 : 0;
       });
     
+    // バーの右端に詳細情報を表示（生年月日など）
+    const detailLabels = labelsGroup.selectAll(".detail-label")
+      .data(sortedData.filter(d => d.birth || d.dead))
+      .enter()
+      .append("text")
+      .attr("class", "detail-label")
+      .attr("x", d => xScale(yearToDate(d.end, true)) + 5)
+      .attr("y", d => yScale(d.title) + yScale.bandwidth() / 2)
+      .attr("dy", "0.35em")
+      .style("text-anchor", "start")
+      .style("fill", "#666")
+      .style("font-size", "9px")
+      .style("pointer-events", "none")
+      .text(d => {
+        if (d.birth && d.dead) {
+          return `(${d.birth} - ${d.dead})`;
+        } else if (d.birth) {
+          return `(${d.birth}生)`;
+        } else if (d.dead) {
+          return `(${d.dead}没)`;
+        }
+        return '';
+      })
+      .style("opacity", function(d) {
+        // 画面右端に近い場合は非表示
+        const barEnd = xScale(yearToDate(d.end, true));
+        return barEnd < width - 100 ? 0.7 : 0;
+      });
+    
     // グリッドラインの追加（オプション）
     
     
@@ -165,7 +214,9 @@ const Timeline = ({ data }) => {
     console.log('Time range:', minYear, '-', maxYear);
     console.log('Axes drawn successfully');
     console.log('Bars drawn:', bars.size(), 'items');
-    console.log('Labels drawn:', labels.size(), 'items');
+    console.log('Bar labels drawn:', labels.size(), 'items');
+    console.log('Detail labels drawn:', detailLabels.size(), 'items');
+    console.log('Category icons drawn:', categoryIcons.size(), 'items');
   };
 
   useEffect(() => {
