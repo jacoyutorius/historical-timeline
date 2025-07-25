@@ -89,31 +89,83 @@ const Timeline = ({ data }) => {
     yAxisGroup.selectAll(".tick line").remove();
     yAxisGroup.selectAll(".domain").remove();
     
-    // データバー用のグループを作成
-    g.append("g").attr("class", "person-bars");
+    // データバーの描画
+    const barsGroup = g.append("g").attr("class", "person-bars");
     
-    // ラベル用のグループを作成
-    g.append("g").attr("class", "labels");
+    const bars = barsGroup.selectAll(".person-bar")
+      .data(sortedData)
+      .enter()
+      .append("rect")
+      .attr("class", "person-bar")
+      .attr("data-title", d => d.title)
+      .attr("data-category", d => d.category)
+      .attr("data-start", d => d.start)
+      .attr("data-end", d => d.end)
+      .attr("x", d => xScale(yearToDate(d.start)))
+      .attr("y", d => yScale(d.title))
+      .attr("width", d => xScale(yearToDate(d.end, true)) - xScale(yearToDate(d.start)))
+      .attr("height", yScale.bandwidth())
+      .attr("fill", d => colorScale(d.category))
+      .attr("stroke", "#fff")
+      .attr("stroke-width", 1)
+      .attr("rx", 3) // 角丸
+      .attr("ry", 3)
+      .style("opacity", 0.8)
+      .style("cursor", "pointer")
+      .on("mouseover", function(event, d) {
+        d3.select(this)
+          .style("opacity", 1)
+          .attr("stroke-width", 2);
+      })
+      .on("mouseout", function(event, d) {
+        d3.select(this)
+          .style("opacity", 0.8)
+          .attr("stroke-width", 1);
+      });
+    
+    // バー内のテキストラベル（期間表示）
+    const labelsGroup = g.append("g").attr("class", "labels");
+    
+    const labels = labelsGroup.selectAll(".bar-label")
+      .data(sortedData)
+      .enter()
+      .append("text")
+      .attr("class", "bar-label")
+      .attr("x", d => {
+        const barStart = xScale(yearToDate(d.start));
+        const barWidth = xScale(yearToDate(d.end, true)) - barStart;
+        return barStart + barWidth / 2; // バーの中央
+      })
+      .attr("y", d => yScale(d.title) + yScale.bandwidth() / 2)
+      .attr("dy", "0.35em") // 垂直中央揃え
+      .style("text-anchor", "middle")
+      .style("fill", "white")
+      .style("font-size", "10px")
+      .style("font-weight", "500")
+      .style("pointer-events", "none") // マウスイベントを無効化
+      .text(d => {
+        const duration = d.end - d.start;
+        if (duration < 20) {
+          return `${d.start}-${d.end}`; // 短期間は年のみ
+        } else {
+          return `${d.start}-${d.end} (${duration}年)`; // 長期間は期間も表示
+        }
+      })
+      .style("opacity", function(d) {
+        // バーの幅が狭い場合はラベルを非表示
+        const barWidth = xScale(yearToDate(d.end, true)) - xScale(yearToDate(d.start));
+        return barWidth > 80 ? 1 : 0;
+      });
     
     // グリッドラインの追加（オプション）
-    const gridLines = g.append("g")
-      .attr("class", "grid-lines")
-      .selectAll("line")
-      .data(xScale.ticks(d3.timeYear.every(50)))
-      .enter()
-      .append("line")
-      .attr("x1", d => xScale(d))
-      .attr("x2", d => xScale(d))
-      .attr("y1", 0)
-      .attr("y2", height)
-      .style("stroke", "#e0e0e0")
-      .style("stroke-width", 1)
-      .style("stroke-dasharray", "2,2");
+    
     
     // スケール情報をコンソールに出力（デバッグ用）
     console.log('Timeline initialized with data:', sortedData.length, 'items');
     console.log('Time range:', minYear, '-', maxYear);
     console.log('Axes drawn successfully');
+    console.log('Bars drawn:', bars.size(), 'items');
+    console.log('Labels drawn:', labels.size(), 'items');
   };
 
   useEffect(() => {
