@@ -1,0 +1,57 @@
+<svg width="180" height="180" viewBox="0 0 180 180" fill="none" xmlns="http://www.w3.org/2000/svg">
+  <!-- 背景 -->
+  <rect width="180" height="180" rx="40" fill="url(#gradient4)"/>
+  
+  <!-- 装飾的な背景パターン -->
+  <circle cx="45" cy="45" r="20" fill="rgba(255,255,255,0.1)"/>
+  <circle cx="135" cy="45" r="15" fill="rgba(255,255,255,0.08)"/>
+  <circle cx="45" cy="135" r="15" fill="rgba(255,255,255,0.08)"/>
+  <circle cx="135" cy="135" r="20" fill="rgba(255,255,255,0.1)"/>
+  
+  <!-- メインタイムライン軸 -->
+  <line x1="30" y1="90" x2="150" y2="90" stroke="#ffffff" stroke-width="6" stroke-linecap="round"/>
+  
+  <!-- 時代マーカー（大きく） -->
+  <circle cx="50" cy="90" r="8" fill="#e74c3c" stroke="#ffffff" stroke-width="2"/>
+  <circle cx="90" cy="90" r="8" fill="#3498db" stroke="#ffffff" stroke-width="2"/>
+  <circle cx="130" cy="90" r="8" fill="#f39c12" stroke="#ffffff" stroke-width="2"/>
+  
+  <!-- 人物アイコン -->
+  <g transform="translate(50, 60)">
+    <circle cx="0" cy="0" r="6" fill="#ffffff"/>
+    <path d="M-8 12 Q0 8 8 12" stroke="#ffffff" stroke-width="3" fill="none" stroke-linecap="round"/>
+  </g>
+  
+  <g transform="translate(90, 60)">
+    <circle cx="0" cy="0" r="6" fill="#ffffff"/>
+    <path d="M-8 12 Q0 8 8 12" stroke="#ffffff" stroke-width="3" fill="none" stroke-linecap="round"/>
+  </g>
+  
+  <g transform="translate(130, 60)">
+    <circle cx="0" cy="0" r="6" fill="#ffffff"/>
+    <path d="M-8 12 Q0 8 8 12" stroke="#ffffff" stroke-width="3" fill="none" stroke-linecap="round"/>
+  </g>
+  
+  <!-- 組織アイコン -->
+  <rect x="44" y="105" width="12" height="12" fill="#ffffff" rx="2"/>
+  <rect x="84" y="105" width="12" height="12" fill="#ffffff" rx="2"/>
+  <rect x="124" y="105" width="12" height="12" fill="#ffffff" rx="2"/>
+  
+  <!-- 接続線 -->
+  <line x1="50" y1="78" x2="50" y2="82" stroke="#ffffff" stroke-width="2"/>
+  <line x1="90" y1="78" x2="90" y2="82" stroke="#ffffff" stroke-width="2"/>
+  <line x1="130" y1="78" x2="130" y2="82" stroke="#ffffff" stroke-width="2"/>
+  
+  <line x1="50" y1="98" x2="50" y2="105" stroke="#ffffff" stroke-width="2"/>
+  <line x1="90" y1="98" x2="90" y2="105" stroke="#ffffff" stroke-width="2"/>
+  <line x1="130" y1="98" x2="130" y2="105" stroke="#ffffff" stroke-width="2"/>
+  
+  <!-- グラデーション定義 -->
+  <defs>
+    <linearGradient id="gradient4" x1="0%" y1="0%" x2="100%" y2="100%">
+      <stop offset="0%" style="stop-color:#007acc;stop-opacity:1" />
+      <stop offset="50%" style="stop-color:#0056b3;stop-opacity:1" />
+      <stop offset="100%" style="stop-color:#004085;stop-opacity:1" />
+    </linearGradient>
+  </defs>
+</svg>

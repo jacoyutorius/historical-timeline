@@ -16,6 +16,34 @@
   flex-shrink: 0;
 }
 
+.header-content {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 16px;
+  max-width: 600px;
+  margin: 0 auto;
+}
+
+.header-icon {
+  flex-shrink: 0;
+}
+
+.header-text {
+  text-align: left;
+}
+
+@media (max-width: 768px) {
+  .header-content {
+    flex-direction: column;
+    gap: 12px;
+  }
+  
+  .header-text {
+    text-align: center;
+  }
+}
+
 .app-header h1 {
   color: #333;
   margin-bottom: 10px;

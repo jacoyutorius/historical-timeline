@@ -1,0 +1,44 @@
+{
+  "name": "歴史タイムライン - Historical Timeline",
+  "short_name": "歴史タイムライン",
+  "description": "歴史上の人物と組織の生涯・活動期間を視覚化するインタラクティブなタイムラインアプリケーション",
+  "start_url": "/",
+  "display": "standalone",
+  "background_color": "#f8f9fa",
+  "theme_color": "#007acc",
+  "orientation": "landscape-primary",
+  "categories": ["education", "productivity", "utilities"],
+  "lang": "ja",
+  "icons": [
+    {
+      "src": "/timeline-icon.svg",
+      "sizes": "64x64",
+      "type": "image/svg+xml",
+      "purpose": "any maskable"
+    },
+    {
+      "src": "/favicon-32x32.svg",
+      "sizes": "32x32",
+      "type": "image/svg+xml"
+    },
+    {
+      "src": "/favicon-16x16.svg",
+      "sizes": "16x16",
+      "type": "image/svg+xml"
+    },
+    {
+      "src": "/apple-touch-icon.svg",
+      "sizes": "180x180",
+      "type": "image/svg+xml",
+      "purpose": "apple touch icon"
+    }
+  ],
+  "screenshots": [
+    {
+      "src": "/screenshot-wide.png",
+      "sizes": "1280x720",
+      "type": "image/png",
+      "form_factor": "wide"
+    }
+  ]
+}

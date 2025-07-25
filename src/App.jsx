@@ -103,8 +103,53 @@ const App = () => {
   return (
     <div className="app">
       <header className="app-header">
-        <h1>歴史タイムライン</h1>
-        <p>歴史上の人物と組織の生涯・活動期間を視覚化</p>
+        <div className="header-content">
+          <div className="header-icon">
+            <svg
+              width="40"
+              height="40"
+              viewBox="0 0 64 64"
+              fill="none"
+              xmlns="http://www.w3.org/2000/svg"
+            >
+              <circle
+                cx="32"
+                cy="32"
+                r="30"
+                fill="url(#headerGradient)"
+                stroke="#2c3e50"
+                strokeWidth="2"
+              />
+              <line
+                x1="12"
+                y1="32"
+                x2="52"
+                y2="32"
+                stroke="#2c3e50"
+                strokeWidth="3"
+              />
+              <circle cx="18" cy="32" r="4" fill="#e74c3c" />
+              <circle cx="32" cy="32" r="4" fill="#3498db" />
+              <circle cx="46" cy="32" r="4" fill="#f39c12" />
+              <defs>
+                <linearGradient
+                  id="headerGradient"
+                  x1="0%"
+                  y1="0%"
+                  x2="100%"
+                  y2="100%"
+                >
+                  <stop offset="0%" stopColor="#f8f9fa" stopOpacity="1" />
+                  <stop offset="100%" stopColor="#e9ecef" stopOpacity="1" />
+                </linearGradient>
+              </defs>
+            </svg>
+          </div>
+          <div className="header-text">
+            <h1>歴史タイムライン</h1>
+            <p>歴史上の人物と組織の生涯・活動期間を視覚化</p>
+          </div>
+        </div>
       </header>
 
       <main className="app-main">
