@@ -11,12 +11,6 @@ const Timeline = ({ data }) => {
   const width = 1000 - margin.left - margin.right;
   const height = 600 - margin.top - margin.bottom;
   
-  useEffect(() => {
-    if (data && data.length > 0) {
-      drawTimeline();
-    }
-  }, [data]);
-  
   const drawTimeline = () => {
     // SVG要素をクリア
     const svg = d3.select(svgRef.current);
@@ -40,6 +34,12 @@ const Timeline = ({ data }) => {
     
     console.log('Timeline initialized with data:', data.length, 'items');
   };
+
+  useEffect(() => {
+    if (data && data.length > 0) {
+      drawTimeline();
+    }
+  }, [data]);
   
   return (
     <div ref={containerRef} className="timeline-wrapper">
