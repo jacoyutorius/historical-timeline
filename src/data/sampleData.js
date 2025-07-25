@@ -1,0 +1,213 @@
+// 歴史タイムライン用サンプルデータ
+export const sampleData = [
+  // 日本の歴史人物
+  {
+    title: "織田信長",
+    category: "people",
+    start: 1534,
+    end: 1582,
+    events: [
+      { start: 1560, content: "桶狭間の戦い" },
+      { start: 1568, content: "上洛" },
+      { start: 1573, content: "室町幕府滅亡" },
+      { start: 1582, content: "本能寺の変" }
+    ],
+    birth: "1534年6月23日",
+    dead: "1582年6月21日",
+    imageUrl: "/images/nobunaga.jpg"
+  },
+  {
+    title: "豊臣秀吉",
+    category: "people",
+    start: 1537,
+    end: 1598,
+    events: [
+      { start: 1582, content: "山崎の戦い" },
+      { start: 1583, content: "賤ヶ岳の戦い" },
+      { start: 1590, content: "天下統一" },
+      { start: 1592, content: "朝鮮出兵開始" }
+    ],
+    birth: "1537年3月17日",
+    dead: "1598年9月18日",
+    imageUrl: "/images/hideyoshi.jpg"
+  },
+  {
+    title: "徳川家康",
+    category: "people",
+    start: 1543,
+    end: 1616,
+    events: [
+      { start: 1600, content: "関ヶ原の戦い" },
+      { start: 1603, content: "江戸幕府開府" },
+      { start: 1605, content: "将軍職を秀忠に譲る" },
+      { start: 1615, content: "大坂夏の陣" }
+    ],
+    birth: "1543年1月31日",
+    dead: "1616年6月1日",
+    imageUrl: "/images/ieyasu.jpg"
+  },
+  {
+    title: "江戸幕府",
+    category: "organization",
+    start: 1603,
+    end: 1868,
+    events: [
+      { start: 1603, content: "幕府開府" },
+      { start: 1633, content: "鎖国政策開始" },
+      { start: 1853, content: "ペリー来航" },
+      { start: 1867, content: "大政奉還" },
+      { start: 1868, content: "明治維新" }
+    ],
+    imageUrl: "/images/edo-bakufu.jpg"
+  },
+  {
+    title: "坂本龍馬",
+    category: "people",
+    start: 1836,
+    end: 1867,
+    events: [
+      { start: 1862, content: "脱藩" },
+      { start: 1865, content: "亀山社中設立" },
+      { start: 1866, content: "薩長同盟仲介" },
+      { start: 1867, content: "船中八策" }
+    ],
+    birth: "1836年1月3日",
+    dead: "1867年12月10日",
+    imageUrl: "/images/ryoma.jpg"
+  },
+  {
+    title: "夏目漱石",
+    category: "people",
+    start: 1867,
+    end: 1916,
+    events: [
+      { start: 1900, content: "英国留学" },
+      { start: 1905, content: "『吾輩は猫である』発表" },
+      { start: 1906, content: "『坊っちゃん』発表" },
+      { start: 1914, content: "『こころ』発表" }
+    ],
+    birth: "1867年2月9日",
+    dead: "1916年12月9日",
+    imageUrl: "/images/soseki.jpg"
+  },
+
+  // バウハウス関係者
+  {
+    title: "バウハウス",
+    category: "organization",
+    start: 1919,
+    end: 1933,
+    events: [
+      { start: 1919, content: "ワイマールで設立" },
+      { start: 1925, content: "デッサウに移転" },
+      { start: 1932, content: "ベルリンに移転" },
+      { start: 1933, content: "ナチスにより閉校" }
+    ],
+    imageUrl: "/images/bauhaus.jpg"
+  },
+  {
+    title: "ヴァルター・グロピウス",
+    category: "people",
+    start: 1883,
+    end: 1969,
+    events: [
+      { start: 1919, content: "バウハウス設立・初代校長就任" },
+      { start: 1928, content: "バウハウス校長辞任" },
+      { start: 1934, content: "イギリスに亡命" },
+      { start: 1937, content: "アメリカに移住" }
+    ],
+    birth: "1883年5月18日",
+    dead: "1969年7月5日",
+    imageUrl: "/images/gropius.jpg"
+  },
+  {
+    title: "ルートヴィヒ・ミース・ファン・デル・ローエ",
+    category: "people",
+    start: 1886,
+    end: 1969,
+    events: [
+      { start: 1930, content: "バウハウス第3代校長就任" },
+      { start: 1933, content: "バウハウス閉校" },
+      { start: 1938, content: "アメリカに移住" },
+      { start: 1958, content: "シーグラム・ビル完成" }
+    ],
+    birth: "1886年3月27日",
+    dead: "1969年8月17日",
+    imageUrl: "/images/mies.jpg"
+  },
+  {
+    title: "パウル・クレー",
+    category: "people",
+    start: 1879,
+    end: 1940,
+    events: [
+      { start: 1920, content: "バウハウス教授就任" },
+      { start: 1924, content: "青騎士グループ結成" },
+      { start: 1931, content: "バウハウス退職" },
+      { start: 1933, content: "スイスに帰国" }
+    ],
+    birth: "1879年12月18日",
+    dead: "1940年6月29日",
+    imageUrl: "/images/klee.jpg"
+  },
+  {
+    title: "ヴァシリー・カンディンスキー",
+    category: "people",
+    start: 1866,
+    end: 1944,
+    events: [
+      { start: 1922, content: "バウハウス教授就任" },
+      { start: 1910, content: "抽象絵画の先駆者" },
+      { start: 1933, content: "フランスに移住" },
+      { start: 1939, content: "フランス国籍取得" }
+    ],
+    birth: "1866年12月16日",
+    dead: "1944年12月13日",
+    imageUrl: "/images/kandinsky.jpg"
+  },
+  {
+    title: "ヨハネス・イッテン",
+    category: "people",
+    start: 1888,
+    end: 1967,
+    events: [
+      { start: 1919, content: "バウハウス教授就任" },
+      { start: 1923, content: "バウハウス退職" },
+      { start: 1926, content: "ベルリンで私立学校開設" },
+      { start: 1961, content: "色彩理論の集大成発表" }
+    ],
+    birth: "1888年11月11日",
+    dead: "1967年3月25日",
+    imageUrl: "/images/itten.jpg"
+  },
+  {
+    title: "ラースロー・モホリ・ナジ",
+    category: "people",
+    start: 1895,
+    end: 1946,
+    events: [
+      { start: 1923, content: "バウハウス教授就任" },
+      { start: 1928, content: "バウハウス退職" },
+      { start: 1937, content: "シカゴでニュー・バウハウス設立" },
+      { start: 1944, content: "写真技法の革新" }
+    ],
+    birth: "1895年7月20日",
+    dead: "1946年11月24日",
+    imageUrl: "/images/moholy-nagy.jpg"
+  },
+  {
+    title: "マルセル・ブロイヤー",
+    category: "people",
+    start: 1902,
+    end: 1981,
+    events: [
+      { start: 1920, content: "バウハウス学生として入学" },
+      { start: 1925, content: "バウハウス教授就任" },
+      { start: 1928, content: "バウハウス退職" },
+      { start: 1937, content: "アメリカに移住" }
+    ],
+    birth: "1902年5月21日",
+    dead: "1981年7月1日",
+    imageUrl: "/images/breuer.jpg"
+  }
+];
