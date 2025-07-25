@@ -17,6 +17,50 @@ const Timeline = ({ data }) => {
   const width = 1000 - margin.left - margin.right;
   const height = 600 - margin.top - margin.bottom;
   
+  // ツールチップの内容を作成する関数
+  const createTooltipContent = (d) => {
+    const duration = d.end - d.start;
+    const categoryText = d.category === 'people' ? '人物' : '組織';
+    
+    let content = `
+      <div class="tooltip-header">
+        <span class="tooltip-icon">${d.category === 'people' ? '👤' : '🏛️'}</span>
+        <strong>${d.title}</strong>
+        <span class="tooltip-category">(${categoryText})</span>
+      </div>
+      <div class="tooltip-period">
+        <strong>期間:</strong> ${d.start}年 - ${d.end}年 (${duration}年間)
+      </div>
+    `;
+    
+    if (d.birth) {
+      content += `<div class="tooltip-birth"><strong>生年月日:</strong> ${d.birth}</div>`;
+    }
+    
+    if (d.dead) {
+      content += `<div class="tooltip-death"><strong>没年月日:</strong> ${d.dead}</div>`;
+    }
+    
+    if (d.description) {
+      content += `<div class="tooltip-description">${d.description}</div>`;
+    }
+    
+    if (d.events && d.events.length > 0) {
+      content += `<div class="tooltip-events">
+        <strong>主要な出来事:</strong>
+        <ul>`;
+      d.events.slice(0, 3).forEach(event => {
+        content += `<li>${event.start}年: ${event.content}</li>`;
+      });
+      if (d.events.length > 3) {
+        content += `<li>...他 ${d.events.length - 3}件</li>`;
+      }
+      content += `</ul></div>`;
+    }
+    
+    return content;
+  };
+
   const drawTimeline = () => {
     // データの妥当性チェック
     if (!validateTimelineData(data)) {
@@ -27,6 +71,14 @@ const Timeline = ({ data }) => {
     // SVG要素をクリア
     const svg = d3.select(svgRef.current);
     svg.selectAll("*").remove();
+    
+    // ツールチップの作成
+    const tooltip = d3.select(containerRef.current)
+      .append("div")
+      .attr("class", "timeline-tooltip")
+      .style("opacity", 0)
+      .style("position", "absolute")
+      .style("pointer-events", "none");
     
     // データの前処理とソート
     const sortedData = sortDataByStartYear(data);
@@ -133,14 +185,35 @@ const Timeline = ({ data }) => {
       .style("opacity", 0.8)
       .style("cursor", "pointer")
       .on("mouseover", function(event, d) {
+        // バーのスタイル変更
         d3.select(this)
           .style("opacity", 1)
           .attr("stroke-width", 2);
+        
+        // ツールチップの内容を作成
+        const tooltipContent = createTooltipContent(d);
+        
+        // ツールチップを表示
+        tooltip
+          .html(tooltipContent)
+          .style("opacity", 1)
+          .style("left", (event.pageX + 10) + "px")
+          .style("top", (event.pageY - 10) + "px");
       })
-      .on("mouseout", function(event) {
+      .on("mousemove", function(event, d) {
+        // マウス移動に合わせてツールチップを移動
+        tooltip
+          .style("left", (event.pageX + 10) + "px")
+          .style("top", (event.pageY - 10) + "px");
+      })
+      .on("mouseout", function() {
+        // バーのスタイルを元に戻す
         d3.select(this)
           .style("opacity", 0.8)
           .attr("stroke-width", 1);
+        
+        // ツールチップを非表示
+        tooltip.style("opacity", 0);
       });
     
     // バー内のテキストラベル（期間表示）
@@ -223,6 +296,12 @@ const Timeline = ({ data }) => {
     if (data && data.length > 0) {
       drawTimeline();
     }
+    
+    // クリーンアップ関数
+    return () => {
+      // 既存のツールチップを削除
+      d3.select(containerRef.current).selectAll('.timeline-tooltip').remove();
+    };
   }, [data]);
   
   return (
