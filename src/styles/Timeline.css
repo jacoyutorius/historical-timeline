@@ -8,34 +8,54 @@
   display: flex;
   flex-direction: column;
   min-height: 0;
+  position: relative;
 }
 
-.timeline-header {
-  text-align: center;
-  margin-bottom: 24px;
-  padding-bottom: 20px;
-  border-bottom: 2px solid #e8ecf0;
-  background: linear-gradient(90deg, transparent 0%, rgba(0, 122, 204, 0.1) 50%, transparent 100%);
-  border-radius: 8px;
-  padding: 20px;
+/* ステータス表示 */
+.timeline-status {
+  position: absolute;
+  top: 10px;
+  right: 20px;
+  background: rgba(0, 122, 204, 0.9);
+  color: white;
+  padding: 8px 12px;
+  border-radius: 6px;
+  font-size: 0.85rem;
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  z-index: 10;
 }
 
-.timeline-header h2 {
-  color: #2c3e50;
-  margin-bottom: 12px;
-  font-size: 2.2rem;
-  font-weight: 700;
-  background: linear-gradient(135deg, #007acc, #0056b3);
-  -webkit-background-clip: text;
-  -webkit-text-fill-color: transparent;
-  background-clip: text;
+.timeline-error-banner {
+  position: absolute;
+  top: 10px;
+  left: 50%;
+  transform: translateX(-50%);
+  background: rgba(220, 53, 69, 0.9);
+  color: white;
+  padding: 8px 12px;
+  border-radius: 6px;
+  font-size: 0.85rem;
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  z-index: 10;
 }
 
-.timeline-header p {
-  color: #5a6c7d;
-  margin: 0;
-  font-size: 1rem;
-  font-weight: 500;
+.selected-banner {
+  position: absolute;
+  top: 10px;
+  left: 20px;
+  background: rgba(40, 167, 69, 0.9);
+  color: white;
+  padding: 8px 12px;
+  border-radius: 6px;
+  font-size: 0.85rem;
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  z-index: 10;
 }
 
 .timeline-content {
@@ -261,63 +281,35 @@
   opacity: 0.9;
 }
 
-/* 描画状態表示 */
-.drawing-status {
-  color: #007acc;
-  font-size: 0.9rem;
-  margin-top: 5px;
-  display: flex;
-  align-items: center;
-  gap: 8px;
-  font-weight: 500;
-}
-
+/* 小さなローディングスピナー */
 .loading-spinner-small {
   width: 16px;
   height: 16px;
-  border: 2px solid #f3f3f3;
-  border-top: 2px solid #007acc;
+  border: 2px solid rgba(255, 255, 255, 0.3);
+  border-top: 2px solid white;
   border-radius: 50%;
   animation: spin 1s linear infinite;
 }
 
-.draw-error {
-  color: #dc3545;
-  font-size: 0.9rem;
-  margin-top: 5px;
-  display: flex;
-  align-items: center;
-  gap: 10px;
-  font-weight: 500;
-  background-color: #f8d7da;
-  padding: 8px 12px;
-  border-radius: 6px;
-  border: 1px solid #f5c6cb;
-}
-
-.retry-button {
-  background-color: #dc3545;
+/* ステータス表示内のボタン */
+.timeline-status .retry-button,
+.timeline-error-banner .retry-button,
+.selected-banner .close-selection {
+  background: rgba(255, 255, 255, 0.2);
   color: white;
-  border: none;
+  border: 1px solid rgba(255, 255, 255, 0.3);
   padding: 4px 8px;
   border-radius: 4px;
   font-size: 0.8rem;
   cursor: pointer;
-  transition: background-color 0.2s ease;
+  transition: all 0.2s ease;
 }
 
-.retry-button:hover {
-  background-color: #c82333;
-}
-
-/* 選択情報表示 */
-.selected-info {
-  color: #007acc;
-  font-size: 0.9rem;
-  margin-top: 5px;
-  display: flex;
-  align-items: center;
-  gap: 10px;
+.timeline-status .retry-button:hover,
+.timeline-error-banner .retry-button:hover,
+.selected-banner .close-selection:hover {
+  background: rgba(255, 255, 255, 0.3);
+  border-color: rgba(255, 255, 255, 0.5);
 }
 
 .close-selection {

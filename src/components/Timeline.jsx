@@ -503,38 +503,35 @@ const Timeline = ({ data }) => {
 
   return (
     <div ref={containerRef} className="timeline-wrapper">
-      <div className="timeline-header">
-        <h2>歴史タイムライン</h2>
-        <p>データ項目数: {data ? data.length : 0}</p>
-        {isDrawing && (
-          <p className="drawing-status">
-            <span className="loading-spinner-small"></span>
-            タイムラインを描画中...
-          </p>
-        )}
-        {drawError && (
-          <p className="draw-error">
-            ⚠️ {drawError}
-            <button
-              onClick={() => {
-                setDrawError(null);
-                drawTimeline();
-              }}
-              className="retry-button"
-            >
-              再試行
-            </button>
-          </p>
-        )}
-        {selectedItem && (
-          <p className="selected-info">
-            選択中: <strong>{selectedItem.title}</strong>
-            <button onClick={closeDetailPanel} className="close-selection">
-              ×
-            </button>
-          </p>
-        )}
-      </div>
+      {/* ステータス表示（必要な場合のみ） */}
+      {isDrawing && (
+        <div className="timeline-status">
+          <span className="loading-spinner-small"></span>
+          タイムラインを描画中...
+        </div>
+      )}
+      {drawError && (
+        <div className="timeline-error-banner">
+          ⚠️ {drawError}
+          <button
+            onClick={() => {
+              setDrawError(null);
+              drawTimeline();
+            }}
+            className="retry-button"
+          >
+            再試行
+          </button>
+        </div>
+      )}
+      {selectedItem && (
+        <div className="selected-banner">
+          選択中: <strong>{selectedItem.title}</strong>
+          <button onClick={closeDetailPanel} className="close-selection">
+            ×
+          </button>
+        </div>
+      )}
 
       <div className="timeline-content">
         <div className="timeline-canvas">
