@@ -357,12 +357,22 @@ const Timeline = ({ data }) => {
       drawTimeline();
     }
     
+    // ウィンドウリサイズ対応
+    const handleResize = () => {
+      if (data && data.length > 0) {
+        setTimeout(() => drawTimeline(), 100);
+      }
+    };
+    
+    window.addEventListener('resize', handleResize);
+    
     // クリーンアップ関数
     return () => {
+      window.removeEventListener('resize', handleResize);
       // 既存のツールチップを削除
       d3.select(containerRef.current).selectAll('.timeline-tooltip').remove();
     };
-  }, [data, drawTimeline]);
+  }, [data]);
   
   // 詳細パネルを閉じる関数
   const closeDetailPanel = () => {
