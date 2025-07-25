@@ -355,6 +355,78 @@ const Timeline = React.memo(({ data }) => {
           return barEnd < width - 100 ? 0.7 : 0;
         });
 
+      // イベント点の描画
+      const eventsGroup = g.append("g").attr("class", "event-points");
+
+      // 全ての人物・組織のイベントを収集
+      const allEvents = [];
+      sortedData.forEach((person) => {
+        if (person.events && person.events.length > 0) {
+          person.events.forEach((event) => {
+            allEvents.push({
+              ...event,
+              personTitle: person.title,
+              personCategory: person.category,
+              personId: person.title.replace(/\s+/g, "_"),
+              yPosition: yScale(person.title) + yScale.bandwidth() / 2,
+            });
+          });
+        }
+      });
+
+      // イベント点を描画
+      const eventPoints = eventsGroup
+        .selectAll(".event-point")
+        .data(allEvents)
+        .enter()
+        .append("circle")
+        .attr("class", "event-point")
+        .attr("cx", (d) => xScale(yearToDate(d.start)))
+        .attr("cy", (d) => d.yPosition)
+        .attr("r", 3)
+        .attr("fill", (d) =>
+          d.personCategory === "people" ? "#e74c3c" : "#f39c12"
+        )
+        .attr("stroke", "#fff")
+        .attr("stroke-width", 1.5)
+        .style("cursor", "pointer")
+        .style("opacity", 0.8)
+        .on("mouseover", function (event, d) {
+          d3.select(this).attr("r", 5).style("opacity", 1);
+
+          // イベント専用ツールチップを表示
+          const eventTooltipContent = `
+            <div class="tooltip-header">
+              <span class="tooltip-icon">${
+                d.personCategory === "people" ? "📅" : "🏛️"
+              }</span>
+              <strong>${d.content}</strong>
+            </div>
+            <div class="tooltip-period">
+              <strong>発生年:</strong> ${d.start}年
+            </div>
+            <div class="tooltip-person">
+              <strong>関連:</strong> ${d.personTitle}
+            </div>
+          `;
+
+          tooltip
+            .html(eventTooltipContent)
+            .style("opacity", 1)
+            .style("left", event.pageX + 10 + "px")
+            .style("top", event.pageY - 10 + "px");
+        })
+        .on("mousemove", function (event, d) {
+          tooltip
+            .style("left", event.pageX + 10 + "px")
+            .style("top", event.pageY - 10 + "px");
+        })
+        .on("mouseout", function (event, d) {
+          d3.select(this).attr("r", 3).style("opacity", 0.8);
+
+          tooltip.style("opacity", 0);
+        });
+
       // グリッドラインの追加（オプション）
 
       // ズーム機能の設定
@@ -410,6 +482,11 @@ const Timeline = React.memo(({ data }) => {
               const barEnd = newXScale(yearToDate(d.end, true));
               return barEnd < width - 100 ? 0.7 : 0;
             });
+
+          // イベント点の位置を更新
+          eventsGroup
+            .selectAll(".event-point")
+            .attr("cx", (d) => newXScale(yearToDate(d.start)));
         });
 
       // SVGにズーム機能を適用
@@ -644,6 +721,14 @@ const Timeline = React.memo(({ data }) => {
           <div className="legend-item">
             <div className="legend-color organization"></div>
             <span>組織</span>
+          </div>
+          <div className="legend-item">
+            <div className="legend-event-point people-event"></div>
+            <span>人物イベント</span>
+          </div>
+          <div className="legend-item">
+            <div className="legend-event-point org-event"></div>
+            <span>組織イベント</span>
           </div>
         </div>
 
