@@ -412,19 +412,19 @@ const Timeline = React.memo(({ data }) => {
 
           // ツールチップの位置を動的に調整
           const tooltipWidth = 250; // 推定ツールチップ幅
-          const tooltipHeight = 80; // 推定ツールチップ高さ
+          const tooltipHeight = 60; // 推定ツールチップ高さ
 
-          let left = event.pageX + 5;
-          let top = event.pageY - 40;
+          let left = event.pageX + 2;
+          let top = event.pageY - 20;
 
           // 右端チェック
           if (left + tooltipWidth > window.innerWidth) {
-            left = event.pageX - tooltipWidth - 5;
+            left = event.pageX - tooltipWidth - 2;
           }
 
           // 上端チェック
           if (top < 0) {
-            top = event.pageY + 15;
+            top = event.pageY + 8;
           }
 
           tooltip
@@ -436,19 +436,19 @@ const Timeline = React.memo(({ data }) => {
         .on("mousemove", function (event, d) {
           // ツールチップの位置を動的に調整
           const tooltipWidth = 250;
-          const tooltipHeight = 80;
+          const tooltipHeight = 60;
 
-          let left = event.pageX + 5;
-          let top = event.pageY - 40;
+          let left = event.pageX + 2;
+          let top = event.pageY - 20;
 
           // 右端チェック
           if (left + tooltipWidth > window.innerWidth) {
-            left = event.pageX - tooltipWidth - 5;
+            left = event.pageX - tooltipWidth - 2;
           }
 
           // 上端チェック
           if (top < 0) {
-            top = event.pageY + 15;
+            top = event.pageY + 8;
           }
 
           tooltip.style("left", left + "px").style("top", top + "px");
