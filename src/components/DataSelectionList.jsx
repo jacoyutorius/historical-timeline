@@ -1,4 +1,5 @@
 import React, { useMemo } from "react";
+import DataSelectionItem from "./DataSelectionItem";
 import "./DataSelectionList.css";
 
 const DataSelectionList = ({
@@ -60,54 +61,12 @@ const DataSelectionList = ({
   return (
     <div className="data-selection-list">
       {displayData.map((item) => (
-        <div
+        <DataSelectionItem
           key={item.title}
-          className={`list-item ${item.isSelected ? "selected" : ""}`}
-          onClick={() => onToggleItem(item.title)}
-        >
-          <div className="item-checkbox">
-            <input
-              type="checkbox"
-              checked={item.isSelected}
-              onChange={() => onToggleItem(item.title)}
-              aria-label={`${item.title}を選択`}
-            />
-          </div>
-
-          <div className="item-icon">
-            {item.category === "people" ? "👤" : "🏛️"}
-          </div>
-
-          <div className="item-content">
-            <div className="item-header">
-              <div className="item-title">{item.title}</div>
-              <div className="item-category">
-                {item.category === "people" ? "人物" : "組織"}
-              </div>
-            </div>
-
-            <div className="item-details">
-              <div className="item-period">{item.displayPeriod}</div>
-              {item.eventCount > 0 && (
-                <div className="item-events">
-                  📅 {item.eventCount}件のイベント
-                </div>
-              )}
-            </div>
-
-            {/* 人物の場合は生年月日・没年月日を表示 */}
-            {item.category === "people" && (item.birth || item.dead) && (
-              <div className="item-life-dates">
-                {item.birth && (
-                  <span className="birth-date">生: {item.birth}</span>
-                )}
-                {item.dead && (
-                  <span className="death-date">没: {item.dead}</span>
-                )}
-              </div>
-            )}
-          </div>
-        </div>
+          item={item}
+          isSelected={item.isSelected}
+          onToggle={onToggleItem}
+        />
       ))}
     </div>
   );
