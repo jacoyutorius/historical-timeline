@@ -153,12 +153,12 @@ const App = React.memo(() => {
       </header>
 
       <main className="app-main">
-        <div className="timeline-info">
+        {/* <div className="timeline-info">
           <p>データ読み込み完了: {timelineData.length}件の項目</p>
           <div className="performance-info">
             <small>読み込み時間: 約0.8秒</small>
           </div>
-        </div>
+        </div> */}
 
         {/* Timeline コンポーネント */}
         <Timeline data={timelineData} />
