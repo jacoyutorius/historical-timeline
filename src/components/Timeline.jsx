@@ -68,7 +68,7 @@ const Timeline = React.memo(({ data }) => {
 
   // 年度縦線と年齢ポイントを描画する関数
   const drawYearLine = useCallback(
-    (svg, g, xScale, yScale, sortedData, year) => {
+    (svg, g, xScale, yScale, sortedData, year, currentTransform = null) => {
       // 既存の年度縦線と年齢ポイントを削除
       g.selectAll(".year-line-group").remove();
 
@@ -76,8 +76,13 @@ const Timeline = React.memo(({ data }) => {
 
       const yearLineGroup = g.append("g").attr("class", "year-line-group");
 
+      // 現在のズーム状態を考慮したスケールを使用
+      const effectiveXScale = currentTransform
+        ? currentTransform.rescaleX(xScale)
+        : xScale;
+
       // 年度縦線を描画
-      const lineX = xScale(yearToDate(year));
+      const lineX = effectiveXScale(yearToDate(year));
       yearLineGroup
         .append("line")
         .attr("class", "year-line")
@@ -655,7 +660,7 @@ const Timeline = React.memo(({ data }) => {
 
           tooltip.style("left", left + "px").style("top", top + "px");
         })
-        .on("mouseout", function (event) {
+        .on("mouseout", function () {
           d3.select(this).attr("r", 3).style("opacity", 0.8);
 
           tooltip.style("opacity", 0);
@@ -670,8 +675,19 @@ const Timeline = React.memo(({ data }) => {
           // ツールチップを非表示
           tooltip.style("opacity", 0);
 
+          // 現在のズーム状態を取得
+          const currentTransform = d3.zoomTransform(svg.node());
+
           // 年度縦線と年齢ポイントを描画
-          drawYearLine(svg, g, xScale, yScale, sortedData, d.start);
+          drawYearLine(
+            svg,
+            g,
+            xScale,
+            yScale,
+            sortedData,
+            d.start,
+            currentTransform
+          );
 
           // クリックされたイベント点を強調
           eventsGroup.selectAll(".event-point").style("opacity", 0.5);
@@ -741,11 +757,16 @@ const Timeline = React.memo(({ data }) => {
 
           // 年度縦線の位置を更新
           if (selectedYear) {
-            const newLineX = newXScale(yearToDate(selectedYear));
-            g.selectAll(".year-line").attr("x1", newLineX).attr("x2", newLineX);
-            g.selectAll(".year-line-label").attr("x", newLineX);
-            g.selectAll(".age-point").attr("cx", newLineX);
-            g.selectAll(".age-label").attr("x", newLineX + 12);
+            // 年度縦線を再描画（現在のズーム状態を考慮）
+            drawYearLine(
+              svg,
+              g,
+              xScale,
+              yScale,
+              sortedData,
+              selectedYear,
+              transform
+            );
           }
         });
 
