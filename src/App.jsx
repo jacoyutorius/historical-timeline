@@ -4,6 +4,10 @@ import { sampleData } from "./data/sampleData";
 import "./App.css";
 
 const App = React.memo(() => {
+  const [allData] = useState(sampleData); // 全データ（変更不可）
+  const [selectedData, setSelectedData] = useState(sampleData); // 選択されたデータ
+  const [isDataSelectionModalOpen, setIsDataSelectionModalOpen] =
+    useState(false); // モーダル表示状態
   const [timelineData, setTimelineData] = useState([]);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState(null);
@@ -11,6 +15,15 @@ const App = React.memo(() => {
   useEffect(() => {
     loadData();
   }, []);
+
+  // selectedDataが変更されたときにtimelineDataを更新
+  useEffect(() => {
+    if (!loading && !error) {
+      setTimelineData(selectedData);
+    }
+  }, [selectedData, loading, error]);
+
+  // データ選択の処理
 
   const loadData = async () => {
     try {
@@ -40,7 +53,7 @@ const App = React.memo(() => {
         );
       }
 
-      setTimelineData(sampleData);
+      setTimelineData(selectedData);
       setLoading(false);
     } catch (err) {
       console.error("データ読み込みエラー:", err);
@@ -103,7 +116,7 @@ const App = React.memo(() => {
   return (
     <div className="app">
       <header className="app-header">
-        <div className="header-content">
+        <div className="header-content header-with-actions">
           <div className="header-icon">
             <svg
               width="40"
@@ -148,6 +161,19 @@ const App = React.memo(() => {
           <div className="header-text">
             <h1>歴史タイムライン</h1>
             <p>歴史上の人物と組織の生涯・活動期間を視覚化</p>
+          </div>
+          <div className="header-actions">
+            <button
+              className="data-selection-button"
+              onClick={() => setIsDataSelectionModalOpen(true)}
+              title="表示するデータを選択"
+            >
+              <span className="button-icon">⚙️</span>
+              <span className="button-text">データ選択</span>
+              <span className="selection-count">
+                ({selectedData.length}/{allData.length})
+              </span>
+            </button>
           </div>
         </div>
       </header>
