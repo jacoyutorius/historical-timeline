@@ -341,6 +341,12 @@
   font-style: italic;
 }
 
+.event-age {
+  font-weight: 500;
+  color: #90ee90;
+  font-size: 9px;
+}
+
 /* 小さなローディングスピナー */
 .loading-spinner-small {
   width: 16px;

@@ -53,6 +53,18 @@ const Timeline = React.memo(({ data }) => {
 
   const { width, height } = dimensions;
 
+  // 年齢を計算するヘルパー関数
+  const calculateAge = useCallback((birthString, eventYear) => {
+    if (!birthString) return null;
+
+    // 生年文字列から年を抽出（例: "1867年2月9日" -> 1867）
+    const birthYearMatch = birthString.match(/(\d{4})年/);
+    if (!birthYearMatch) return null;
+
+    const birthYear = parseInt(birthYearMatch[1], 10);
+    return eventYear - birthYear;
+  }, []);
+
   // ツールチップの内容を作成する関数（メモ化）
   const createTooltipContent = useCallback((d) => {
     const duration = d.end - d.start;
@@ -402,6 +414,7 @@ const Timeline = React.memo(({ data }) => {
               personTitle: person.title,
               personCategory: person.category,
               personId: person.title.replace(/\s+/g, "_"),
+              personBirth: person.birth, // 生年情報を追加
               yPosition: yScale(person.title) + yScale.bandwidth() / 2,
             });
           });
@@ -428,7 +441,12 @@ const Timeline = React.memo(({ data }) => {
         .on("mouseover", function (event, d) {
           d3.select(this).attr("r", 5).style("opacity", 1);
 
-          // イベント専用ツールチップを表示（コンパクト版）
+          // イベント専用ツールチップを表示（年齢情報付き）
+          const age =
+            d.personCategory === "people" && d.personBirth
+              ? calculateAge(d.personBirth, d.start)
+              : null;
+
           const eventTooltipContent = `
             <div class="event-tooltip-content">
               <div class="event-title">
@@ -440,6 +458,11 @@ const Timeline = React.memo(({ data }) => {
               <div class="event-details">
                 <span class="event-year">${d.start}年</span> • 
                 <span class="event-person">${d.personTitle}</span>
+                ${
+                  age !== null
+                    ? `<br><span class="event-age">当時${age}歳</span>`
+                    : ""
+                }
               </div>
             </div>
           `;
@@ -491,7 +514,7 @@ const Timeline = React.memo(({ data }) => {
 
           tooltip.style("left", left + "px").style("top", top + "px");
         })
-        .on("mouseout", function (event, d) {
+        .on("mouseout", function (event) {
           d3.select(this).attr("r", 3).style("opacity", 0.8);
 
           tooltip.style("opacity", 0);
@@ -616,7 +639,14 @@ const Timeline = React.memo(({ data }) => {
     } finally {
       setIsDrawing(false);
     }
-  }, [processedData, dimensions, width, height, createTooltipContent]);
+  }, [
+    processedData,
+    dimensions,
+    width,
+    height,
+    createTooltipContent,
+    calculateAge,
+  ]);
 
   useEffect(() => {
     // 初期サイズ設定
