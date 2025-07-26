@@ -257,14 +257,14 @@ const Timeline = React.memo(({ data }) => {
           tooltip
             .html(tooltipContent)
             .style("opacity", 1)
-            .style("left", event.pageX + 10 + "px")
-            .style("top", event.pageY - 10 + "px");
+            .style("left", event.pageX + 15 + "px")
+            .style("top", event.pageY - 15 + "px");
         })
         .on("mousemove", function (event) {
           // マウス移動に合わせてツールチップを移動
           tooltip
-            .style("left", event.pageX + 10 + "px")
-            .style("top", event.pageY - 10 + "px");
+            .style("left", event.pageX + 15 + "px")
+            .style("top", event.pageY - 15 + "px");
         })
         .on("mouseout", function () {
           // バーのスタイルを元に戻す
@@ -414,17 +414,19 @@ const Timeline = React.memo(({ data }) => {
           const tooltipWidth = 250; // 推定ツールチップ幅
           const tooltipHeight = 60; // 推定ツールチップ高さ
 
-          let left = event.pageX + 2;
-          let top = event.pageY - 20;
+          let left = event.pageX + 15;
+          let top = event.pageY - 15; // カーソルと同じ高さ付近
 
           // 右端チェック
           if (left + tooltipWidth > window.innerWidth) {
-            left = event.pageX - tooltipWidth - 2;
+            left = event.pageX - tooltipWidth - 15;
           }
 
-          // 上端チェック
+          // 上端・下端チェック
           if (top < 0) {
-            top = event.pageY + 8;
+            top = 10;
+          } else if (top + tooltipHeight > window.innerHeight) {
+            top = window.innerHeight - tooltipHeight - 10;
           }
 
           tooltip
@@ -438,17 +440,19 @@ const Timeline = React.memo(({ data }) => {
           const tooltipWidth = 250;
           const tooltipHeight = 60;
 
-          let left = event.pageX + 2;
-          let top = event.pageY - 20;
+          let left = event.pageX + 15;
+          let top = event.pageY - 15; // カーソルと同じ高さ付近
 
           // 右端チェック
           if (left + tooltipWidth > window.innerWidth) {
-            left = event.pageX - tooltipWidth - 2;
+            left = event.pageX - tooltipWidth - 15;
           }
 
-          // 上端チェック
+          // 上端・下端チェック
           if (top < 0) {
-            top = event.pageY + 8;
+            top = 10;
+          } else if (top + tooltipHeight > window.innerHeight) {
+            top = window.innerHeight - tooltipHeight - 10;
           }
 
           tooltip.style("left", left + "px").style("top", top + "px");
