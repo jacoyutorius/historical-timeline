@@ -406,36 +406,30 @@ const Timeline = React.memo(({ data }) => {
             }`
         );
 
-      // データバーの描画
-      const barsGroup = g.append("g").attr("class", "person-bars");
+      // データラインの描画（細い黒線に変更）
+      const barsGroup = g.append("g").attr("class", "person-lines");
 
       const bars = barsGroup
-        .selectAll(".person-bar")
+        .selectAll(".person-line")
         .data(sortedData)
         .enter()
-        .append("rect")
-        .attr("class", "person-bar")
+        .append("line")
+        .attr("class", "person-line")
         .attr("data-title", (d) => d.title)
         .attr("data-category", (d) => d.category)
         .attr("data-start", (d) => d.start)
         .attr("data-end", (d) => d.end)
-        .attr("x", (d) => xScale(yearToDate(d.start)))
-        .attr("y", (d) => yScale(d.title))
-        .attr(
-          "width",
-          (d) => xScale(yearToDate(d.end, true)) - xScale(yearToDate(d.start))
-        )
-        .attr("height", yScale.bandwidth())
-        .attr("fill", (d) => colorScale(d.category))
-        .attr("stroke", "#fff")
-        .attr("stroke-width", 1)
-        .attr("rx", 3) // 角丸
-        .attr("ry", 3)
+        .attr("x1", (d) => xScale(yearToDate(d.start)))
+        .attr("y1", (d) => yScale(d.title) + yScale.bandwidth() / 2)
+        .attr("x2", (d) => xScale(yearToDate(d.end, true)))
+        .attr("y2", (d) => yScale(d.title) + yScale.bandwidth() / 2)
+        .attr("stroke", "#333") // 黒色に変更
+        .attr("stroke-width", 2) // 細い線
         .style("opacity", 0.8)
         .style("cursor", "pointer")
         .on("mouseover", function (event, d) {
-          // バーのスタイル変更
-          d3.select(this).style("opacity", 1).attr("stroke-width", 2);
+          // ラインのスタイル変更
+          d3.select(this).style("opacity", 1).attr("stroke-width", 4);
 
           // ツールチップの内容を作成
           const tooltipContent = createTooltipContent(d);
@@ -488,31 +482,31 @@ const Timeline = React.memo(({ data }) => {
           tooltip.style("left", left + "px").style("top", top + "px");
         })
         .on("mouseout", function () {
-          // バーのスタイルを元に戻す
-          d3.select(this).style("opacity", 0.8).attr("stroke-width", 1);
+          // ラインのスタイルを元に戻す
+          d3.select(this).style("opacity", 0.8).attr("stroke-width", 2);
 
           // ツールチップを非表示
           tooltip.style("opacity", 0);
         });
 
-      // バー内のテキストラベル（期間表示）
+      // ライン上のテキストラベル（期間表示）
       const labelsGroup = g.append("g").attr("class", "labels");
 
       const labels = labelsGroup
-        .selectAll(".bar-label")
+        .selectAll(".line-label")
         .data(sortedData)
         .enter()
         .append("text")
-        .attr("class", "bar-label")
+        .attr("class", "line-label")
         .attr("x", (d) => {
-          const barStart = xScale(yearToDate(d.start));
-          const barWidth = xScale(yearToDate(d.end, true)) - barStart;
-          return barStart + barWidth / 2; // バーの中央
+          const lineStart = xScale(yearToDate(d.start));
+          const lineWidth = xScale(yearToDate(d.end, true)) - lineStart;
+          return lineStart + lineWidth / 2; // ラインの中央
         })
-        .attr("y", (d) => yScale(d.title) + yScale.bandwidth() / 2)
-        .attr("dy", "0.35em") // 垂直中央揃え
+        .attr("y", (d) => yScale(d.title) + yScale.bandwidth() / 2 - 8) // ラインの上に配置
+        .attr("dy", "0.35em")
         .style("text-anchor", "middle")
-        .style("fill", "white")
+        .style("fill", "#333") // 黒色に変更
         .style("font-size", "10px")
         .style("font-weight", "500")
         .style("pointer-events", "none") // マウスイベントを無効化
@@ -525,13 +519,13 @@ const Timeline = React.memo(({ data }) => {
           }
         })
         .style("opacity", function (d) {
-          // バーの幅が狭い場合はラベルを非表示
-          const barWidth =
+          // ラインの幅が狭い場合はラベルを非表示
+          const lineWidth =
             xScale(yearToDate(d.end, true)) - xScale(yearToDate(d.start));
-          return barWidth > 80 ? 1 : 0;
+          return lineWidth > 80 ? 1 : 0;
         });
 
-      // バーの右端に詳細情報を表示（生年月日など）
+      // ラインの右端に詳細情報を表示（生年月日など）
       const detailLabels = labelsGroup
         .selectAll(".detail-label")
         .data(sortedData.filter((d) => d.birth || d.dead))
@@ -539,7 +533,7 @@ const Timeline = React.memo(({ data }) => {
         .append("text")
         .attr("class", "detail-label")
         .attr("x", (d) => xScale(yearToDate(d.end, true)) + 5)
-        .attr("y", (d) => yScale(d.title) + yScale.bandwidth() / 2)
+        .attr("y", (d) => yScale(d.title) + yScale.bandwidth() / 2 + 12) // ラインの下に配置
         .attr("dy", "0.35em")
         .style("text-anchor", "start")
         .style("fill", "#666")
@@ -557,8 +551,8 @@ const Timeline = React.memo(({ data }) => {
         })
         .style("opacity", function (d) {
           // 画面右端に近い場合は非表示
-          const barEnd = xScale(yearToDate(d.end, true));
-          return barEnd < width - 100 ? 0.7 : 0;
+          const lineEnd = xScale(yearToDate(d.end, true));
+          return lineEnd < width - 100 ? 0.7 : 0;
         });
 
       // イベント点の描画
@@ -733,30 +727,25 @@ const Timeline = React.memo(({ data }) => {
             d3.axisBottom(newXScale).tickFormat(d3.timeFormat("%Y"))
           );
 
-          // バーの位置とサイズを更新
+          // ラインの位置を更新
           barsGroup
-            .selectAll(".person-bar")
-            .attr("x", (d) => newXScale(yearToDate(d.start)))
-            .attr(
-              "width",
-              (d) =>
-                newXScale(yearToDate(d.end, true)) -
-                newXScale(yearToDate(d.start))
-            );
+            .selectAll(".person-line")
+            .attr("x1", (d) => newXScale(yearToDate(d.start)))
+            .attr("x2", (d) => newXScale(yearToDate(d.end, true)));
 
-          // バー内ラベルの位置を更新
+          // ライン上ラベルの位置を更新
           labelsGroup
-            .selectAll(".bar-label")
+            .selectAll(".line-label")
             .attr("x", (d) => {
-              const barStart = newXScale(yearToDate(d.start));
-              const barWidth = newXScale(yearToDate(d.end, true)) - barStart;
-              return barStart + barWidth / 2;
+              const lineStart = newXScale(yearToDate(d.start));
+              const lineWidth = newXScale(yearToDate(d.end, true)) - lineStart;
+              return lineStart + lineWidth / 2;
             })
             .style("opacity", function (d) {
-              const barWidth =
+              const lineWidth =
                 newXScale(yearToDate(d.end, true)) -
                 newXScale(yearToDate(d.start));
-              return barWidth > 80 ? 1 : 0;
+              return lineWidth > 80 ? 1 : 0;
             });
 
           // 詳細ラベルの位置を更新
@@ -764,8 +753,8 @@ const Timeline = React.memo(({ data }) => {
             .selectAll(".detail-label")
             .attr("x", (d) => newXScale(yearToDate(d.end, true)) + 5)
             .style("opacity", function (d) {
-              const barEnd = newXScale(yearToDate(d.end, true));
-              return barEnd < width - 100 ? 0.7 : 0;
+              const lineEnd = newXScale(yearToDate(d.end, true));
+              return lineEnd < width - 100 ? 0.7 : 0;
             });
 
           // イベント点の位置を更新
@@ -816,8 +805,8 @@ const Timeline = React.memo(({ data }) => {
       );
       console.log("Time range:", minYear, "-", maxYear);
       console.log("Axes drawn successfully");
-      console.log("Bars drawn:", bars.size(), "items");
-      console.log("Bar labels drawn:", labels.size(), "items");
+      console.log("Lines drawn:", bars.size(), "items");
+      console.log("Line labels drawn:", labels.size(), "items");
       console.log("Detail labels drawn:", detailLabels.size(), "items");
       console.log("Category icons drawn:", categoryIcons.size(), "items");
       console.log("Zoom functionality enabled");
