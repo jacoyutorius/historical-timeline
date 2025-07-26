@@ -1,0 +1,210 @@
+/* データ選択リスト */
+.data-selection-list {
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+}
+
+/* リストアイテム */
+.list-item {
+  display: flex;
+  align-items: flex-start;
+  gap: 12px;
+  padding: 16px;
+  border: 1px solid #e9ecef;
+  border-radius: 8px;
+  cursor: pointer;
+  transition: all 0.2s ease;
+  background-color: white;
+}
+
+.list-item:hover {
+  border-color: #007acc;
+  box-shadow: 0 2px 8px rgba(0, 122, 204, 0.1);
+  transform: translateY(-1px);
+}
+
+.list-item.selected {
+  border-color: #007acc;
+  background-color: #f0f8ff;
+  box-shadow: 0 2px 8px rgba(0, 122, 204, 0.15);
+}
+
+/* チェックボックス */
+.item-checkbox {
+  flex-shrink: 0;
+  margin-top: 2px;
+}
+
+.item-checkbox input[type="checkbox"] {
+  width: 18px;
+  height: 18px;
+  cursor: pointer;
+  accent-color: #007acc;
+}
+
+/* アイコン */
+.item-icon {
+  flex-shrink: 0;
+  font-size: 20px;
+  margin-top: 1px;
+}
+
+/* コンテンツ */
+.item-content {
+  flex: 1;
+  min-width: 0;
+}
+
+.item-header {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  margin-bottom: 8px;
+}
+
+.item-title {
+  font-size: 1rem;
+  font-weight: 600;
+  color: #333;
+  flex: 1;
+}
+
+.item-category {
+  font-size: 0.8rem;
+  color: #6c757d;
+  background-color: #f8f9fa;
+  padding: 2px 8px;
+  border-radius: 12px;
+  flex-shrink: 0;
+}
+
+.list-item.selected .item-category {
+  background-color: #e3f2fd;
+  color: #1976d2;
+}
+
+.item-details {
+  display: flex;
+  align-items: center;
+  gap: 16px;
+  margin-bottom: 6px;
+  flex-wrap: wrap;
+}
+
+.item-period {
+  font-size: 0.9rem;
+  color: #495057;
+  font-weight: 500;
+}
+
+.item-events {
+  font-size: 0.85rem;
+  color: #6c757d;
+  display: flex;
+  align-items: center;
+  gap: 4px;
+}
+
+.item-life-dates {
+  display: flex;
+  gap: 12px;
+  font-size: 0.8rem;
+  color: #6c757d;
+  margin-top: 4px;
+}
+
+.birth-date,
+.death-date {
+  display: flex;
+  align-items: center;
+  gap: 4px;
+}
+
+.birth-date::before {
+  content: "🎂";
+  font-size: 0.9em;
+}
+
+.death-date::before {
+  content: "⚰️";
+  font-size: 0.9em;
+}
+
+/* 空の状態 */
+.list-empty {
+  text-align: center;
+  padding: 60px 20px;
+  color: #6c757d;
+}
+
+.empty-icon {
+  font-size: 3rem;
+  margin-bottom: 16px;
+  opacity: 0.5;
+}
+
+.empty-message {
+  font-size: 1.1rem;
+  font-weight: 500;
+  margin-bottom: 8px;
+  color: #495057;
+}
+
+.empty-suggestion {
+  font-size: 0.9rem;
+  color: #6c757d;
+  font-style: italic;
+}
+
+/* レスポンシブ対応 */
+@media (max-width: 768px) {
+  .list-item {
+    padding: 12px;
+    gap: 10px;
+  }
+  
+  .item-header {
+    flex-direction: column;
+    align-items: flex-start;
+    gap: 6px;
+  }
+  
+  .item-category {
+    align-self: flex-start;
+  }
+  
+  .item-details {
+    flex-direction: column;
+    align-items: flex-start;
+    gap: 6px;
+  }
+  
+  .item-life-dates {
+    flex-direction: column;
+    gap: 4px;
+  }
+}
+
+@media (max-width: 480px) {
+  .list-item {
+    padding: 10px;
+    gap: 8px;
+  }
+  
+  .item-icon {
+    font-size: 18px;
+  }
+  
+  .item-title {
+    font-size: 0.95rem;
+  }
+  
+  .item-period {
+    font-size: 0.85rem;
+  }
+  
+  .item-events {
+    font-size: 0.8rem;
+  }
+}

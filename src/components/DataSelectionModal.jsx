@@ -1,4 +1,5 @@
 import React, { useState, useEffect, useCallback } from "react";
+import DataSelectionList from "./DataSelectionList";
 import "./DataSelectionModal.css";
 
 const DataSelectionModal = ({
@@ -62,6 +63,19 @@ const DataSelectionModal = ({
     onClose();
   }, [onClose]);
 
+  // アイテムの選択/選択解除
+  const handleToggleItem = useCallback((itemTitle) => {
+    setSelectedItems((prev) => {
+      const newSet = new Set(prev);
+      if (newSet.has(itemTitle)) {
+        newSet.delete(itemTitle);
+      } else {
+        newSet.add(itemTitle);
+      }
+      return newSet;
+    });
+  }, []);
+
   if (!isOpen) {
     return null;
   }
@@ -114,11 +128,15 @@ const DataSelectionModal = ({
             </div>
           </div>
 
-          {/* データリスト部分（後で実装） */}
+          {/* データリスト部分 */}
           <div className="modal-list">
-            <div className="list-placeholder">
-              データリストがここに表示されます
-            </div>
+            <DataSelectionList
+              data={allData}
+              selectedItems={selectedItems}
+              onToggleItem={handleToggleItem}
+              searchTerm={searchTerm}
+              categoryFilter={categoryFilter}
+            />
           </div>
         </div>
 
