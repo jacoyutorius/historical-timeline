@@ -43,7 +43,7 @@ const Timeline = React.memo(({ data }) => {
     if (containerRef.current) {
       const containerRect = containerRef.current.getBoundingClientRect();
       const availableWidth = Math.max(800, window.innerWidth - 80);
-      const availableHeight = Math.max(400, window.innerHeight - 280);
+      const availableHeight = Math.max(400, window.innerHeight - 220); // 280→220に変更してより多くの高さを確保
 
       setDimensions({
         width: availableWidth - margin.left - margin.right,

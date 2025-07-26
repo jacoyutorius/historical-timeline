@@ -10,20 +10,20 @@
 
 .app-header {
   text-align: center;
-  padding: 20px;
+  padding: 12px 20px; /* 縦パディングを20px→12pxに削減 */
   border-bottom: 2px solid #e0e0e0;
   background: linear-gradient(135deg, #f8f9fa 0%, #ffffff 100%);
   flex-shrink: 0;
   display: flex;
   flex-direction: column;
-  gap: 16px;
+  gap: 10px; /* ギャップを16px→10pxに削減 */
 }
 
 .header-title-row {
   display: flex;
   align-items: center;
   justify-content: center;
-  gap: 16px;
+  gap: 12px; /* ギャップを16px→12pxに削減 */
   max-width: 600px;
   margin: 0 auto;
 }
@@ -57,17 +57,17 @@
 .data-selection-button {
   display: flex;
   align-items: center;
-  gap: 8px;
+  gap: 6px; /* ギャップを削減 */
   background: linear-gradient(135deg, #007acc, #0056b3);
   color: white;
   border: none;
-  padding: 10px 16px;
-  border-radius: 8px;
+  padding: 8px 14px; /* パディングを削減 */
+  border-radius: 6px; /* 角丸を少し小さく */
   cursor: pointer;
-  font-size: 0.9rem;
+  font-size: 0.85rem; /* フォントサイズを削減 */
   font-weight: 500;
   transition: all 0.3s ease;
-  box-shadow: 0 2px 8px rgba(0, 122, 204, 0.3);
+  box-shadow: 0 2px 6px rgba(0, 122, 204, 0.3); /* シャドウを少し小さく */
 }
 
 .data-selection-button:hover {
@@ -102,27 +102,36 @@
 
 @media (max-width: 768px) {
   .app-header {
-    padding: 16px;
-    gap: 12px;
+    padding: 10px 16px; /* モバイルでもさらに縦パディングを削減 */
+    gap: 8px; /* ギャップをさらに削減 */
   }
   
   .header-title-row {
     flex-direction: column;
-    gap: 12px;
+    gap: 8px; /* ギャップを削減 */
   }
   
   .header-content {
     flex-direction: column;
-    gap: 12px;
+    gap: 8px; /* ギャップを削減 */
   }
   
   .header-with-actions {
     flex-direction: column;
-    gap: 16px;
+    gap: 10px; /* ギャップを削減 */
   }
   
   .header-text {
     text-align: center;
+  }
+  
+  .app-header h1 {
+    font-size: 1.6rem; /* モバイルでさらに小さく */
+    margin: 0 0 2px 0;
+  }
+  
+  .app-header p {
+    font-size: 0.85rem; /* モバイルでさらに小さく */
   }
   
   .data-selection-button {
@@ -133,13 +142,14 @@
 
 .app-header h1 {
   color: #333;
-  margin-bottom: 10px;
-  font-size: 2.5rem;
+  margin: 0 0 4px 0; /* マージンを削減 */
+  font-size: 2rem; /* フォントサイズを2.5rem→2remに削減 */
 }
 
 .app-header p {
   color: #666;
-  font-size: 1.1rem;
+  font-size: 0.95rem; /* フォントサイズを1.1rem→0.95remに削減 */
+  margin: 0; /* マージンを削除 */
 }
 
 .app-main {
