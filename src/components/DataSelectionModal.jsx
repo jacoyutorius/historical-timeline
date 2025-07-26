@@ -76,6 +76,33 @@ const DataSelectionModal = ({
     });
   }, []);
 
+  // 全選択
+  const handleSelectAll = useCallback(() => {
+    const allTitles = allData.map((item) => item.title);
+    setSelectedItems(new Set(allTitles));
+  }, [allData]);
+
+  // 全解除
+  const handleDeselectAll = useCallback(() => {
+    setSelectedItems(new Set());
+  }, []);
+
+  // 人物のみ選択
+  const handleSelectPeople = useCallback(() => {
+    const peopleTitles = allData
+      .filter((item) => item.category === "people")
+      .map((item) => item.title);
+    setSelectedItems(new Set(peopleTitles));
+  }, [allData]);
+
+  // 組織のみ選択
+  const handleSelectOrganizations = useCallback(() => {
+    const orgTitles = allData
+      .filter((item) => item.category === "organization")
+      .map((item) => item.title);
+    setSelectedItems(new Set(orgTitles));
+  }, [allData]);
+
   if (!isOpen) {
     return null;
   }
@@ -126,6 +153,38 @@ const DataSelectionModal = ({
                 <option value="organization">組織のみ</option>
               </select>
             </div>
+          </div>
+
+          {/* 一括選択ボタン */}
+          <div className="bulk-actions">
+            <button
+              className="bulk-action-button select-all"
+              onClick={handleSelectAll}
+              title="すべてのアイテムを選択"
+            >
+              ✓ 全選択
+            </button>
+            <button
+              className="bulk-action-button deselect-all"
+              onClick={handleDeselectAll}
+              title="すべての選択を解除"
+            >
+              ✗ 全解除
+            </button>
+            <button
+              className="bulk-action-button select-people"
+              onClick={handleSelectPeople}
+              title="人物のみを選択"
+            >
+              👤 人物のみ
+            </button>
+            <button
+              className="bulk-action-button select-organizations"
+              onClick={handleSelectOrganizations}
+              title="組織のみを選択"
+            >
+              🏛️ 組織のみ
+            </button>
           </div>
 
           {/* データリスト部分 */}
