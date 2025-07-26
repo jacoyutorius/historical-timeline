@@ -18,6 +18,7 @@ const Timeline = React.memo(({ data }) => {
   const svgRef = useRef();
   const containerRef = useRef();
   const [selectedItem, setSelectedItem] = useState(null);
+  const [selectedYear, setSelectedYear] = useState(null); // 選択された年度を管理
   const [renderError] = useState(null);
   const [isDrawing, setIsDrawing] = useState(false);
   const [drawError, setDrawError] = useState(null);
@@ -64,6 +65,146 @@ const Timeline = React.memo(({ data }) => {
     const birthYear = parseInt(birthYearMatch[1], 10);
     return eventYear - birthYear;
   }, []);
+
+  // 年度縦線と年齢ポイントを描画する関数
+  const drawYearLine = useCallback(
+    (svg, g, xScale, yScale, sortedData, year) => {
+      // 既存の年度縦線と年齢ポイントを削除
+      g.selectAll(".year-line-group").remove();
+
+      if (!year) return;
+
+      const yearLineGroup = g.append("g").attr("class", "year-line-group");
+
+      // 年度縦線を描画
+      const lineX = xScale(yearToDate(year));
+      yearLineGroup
+        .append("line")
+        .attr("class", "year-line")
+        .attr("x1", lineX)
+        .attr("y1", 0)
+        .attr("x2", lineX)
+        .attr("y2", height)
+        .attr("stroke", "#ff6b6b")
+        .attr("stroke-width", 3)
+        .attr("stroke-dasharray", "5,5")
+        .style("opacity", 0.8);
+
+      // 年度ラベルを描画
+      yearLineGroup
+        .append("text")
+        .attr("class", "year-line-label")
+        .attr("x", lineX)
+        .attr("y", -5)
+        .attr("text-anchor", "middle")
+        .style("font-size", "14px")
+        .style("font-weight", "bold")
+        .style("fill", "#ff6b6b")
+        .style("background", "white")
+        .text(`${year}年`);
+
+      // 各人物のタイムラインとの交点に年齢ポイントを描画
+      const agePointsGroup = yearLineGroup
+        .append("g")
+        .attr("class", "age-points");
+
+      sortedData.forEach((person) => {
+        // その年がその人物の活動期間内かチェック
+        if (year >= person.start && year <= person.end && person.birth) {
+          const age = calculateAge(person.birth, year);
+          if (age !== null) {
+            const pointY = yScale(person.title) + yScale.bandwidth() / 2;
+
+            // 年齢ポイントを描画
+            const agePoint = agePointsGroup
+              .append("circle")
+              .attr("class", "age-point")
+              .attr("cx", lineX)
+              .attr("cy", pointY)
+              .attr("r", 6)
+              .attr(
+                "fill",
+                person.category === "people" ? "#4a90e2" : "#f5a623"
+              )
+              .attr("stroke", "#fff")
+              .attr("stroke-width", 2)
+              .style("cursor", "pointer")
+              .style("opacity", 0.9);
+
+            // 年齢ラベルを描画
+            agePointsGroup
+              .append("text")
+              .attr("class", "age-label")
+              .attr("x", lineX + 12)
+              .attr("y", pointY)
+              .attr("dy", "0.35em")
+              .style("font-size", "11px")
+              .style("font-weight", "bold")
+              .style("fill", "#333")
+              .style("background", "rgba(255, 255, 255, 0.8)")
+              .style("pointer-events", "none")
+              .text(`${age}歳`);
+
+            // 年齢ポイントにツールチップを追加
+            agePoint
+              .on("mouseover", function (event) {
+                const tooltip = d3
+                  .select(containerRef.current)
+                  .select(".timeline-tooltip");
+
+                const ageTooltipContent = `
+                <div class="age-tooltip-content">
+                  <div class="age-tooltip-header">
+                    <span class="tooltip-icon">${
+                      person.category === "people" ? "👤" : "🏛️"
+                    }</span>
+                    <strong>${person.title}</strong>
+                  </div>
+                  <div class="age-tooltip-details">
+                    <div>${year}年時点で<strong>${age}歳</strong></div>
+                    ${
+                      person.birth
+                        ? `<div class="birth-info">生年: ${person.birth}</div>`
+                        : ""
+                    }
+                  </div>
+                </div>
+              `;
+
+                const tooltipWidth = 200;
+                const tooltipHeight = 80;
+
+                let left = event.pageX + 10;
+                let top = event.pageY;
+
+                if (left + tooltipWidth > window.innerWidth) {
+                  left = event.pageX - tooltipWidth - 10;
+                }
+
+                if (top < 0) {
+                  top = 10;
+                } else if (top + tooltipHeight > window.innerHeight) {
+                  top = window.innerHeight - tooltipHeight - 10;
+                }
+
+                tooltip
+                  .html(ageTooltipContent)
+                  .style("opacity", 1)
+                  .style("left", left + "px")
+                  .style("top", top + "px");
+              })
+              .on("mouseout", function () {
+                const tooltip = d3
+                  .select(containerRef.current)
+                  .select(".timeline-tooltip");
+                tooltip.style("opacity", 0);
+              });
+          }
+        }
+      });
+    },
+    [height, calculateAge]
+  );
 
   // ツールチップの内容を作成する関数（メモ化）
   const createTooltipContent = useCallback((d) => {
@@ -518,6 +659,23 @@ const Timeline = React.memo(({ data }) => {
           d3.select(this).attr("r", 3).style("opacity", 0.8);
 
           tooltip.style("opacity", 0);
+        })
+        .on("click", function (event, d) {
+          // イベント点をクリックしたときの処理
+          event.stopPropagation(); // イベントの伝播を停止
+
+          // 選択された年度を設定
+          setSelectedYear(d.start);
+
+          // ツールチップを非表示
+          tooltip.style("opacity", 0);
+
+          // 年度縦線と年齢ポイントを描画
+          drawYearLine(svg, g, xScale, yScale, sortedData, d.start);
+
+          // クリックされたイベント点を強調
+          eventsGroup.selectAll(".event-point").style("opacity", 0.5);
+          d3.select(this).style("opacity", 1).attr("r", 5);
         });
 
       // グリッドラインの追加（オプション）
@@ -580,10 +738,35 @@ const Timeline = React.memo(({ data }) => {
           eventsGroup
             .selectAll(".event-point")
             .attr("cx", (d) => newXScale(yearToDate(d.start)));
+
+          // 年度縦線の位置を更新
+          if (selectedYear) {
+            const newLineX = newXScale(yearToDate(selectedYear));
+            g.selectAll(".year-line").attr("x1", newLineX).attr("x2", newLineX);
+            g.selectAll(".year-line-label").attr("x", newLineX);
+            g.selectAll(".age-point").attr("cx", newLineX);
+            g.selectAll(".age-label").attr("x", newLineX + 12);
+          }
         });
 
       // SVGにズーム機能を適用
       svg.call(zoom);
+
+      // SVG背景クリックで年度縦線をクリア
+      svg.on("click", function (event) {
+        // イベント点以外をクリックした場合
+        if (
+          event.target === svg.node() ||
+          event.target.classList.contains("timeline-svg")
+        ) {
+          setSelectedYear(null);
+          g.selectAll(".year-line-group").remove();
+          eventsGroup
+            .selectAll(".event-point")
+            .style("opacity", 0.8)
+            .attr("r", 3);
+        }
+      });
 
       // スケール情報をコンソールに出力（デバッグ用）
       console.log(
@@ -646,6 +829,8 @@ const Timeline = React.memo(({ data }) => {
     height,
     createTooltipContent,
     calculateAge,
+    drawYearLine,
+    selectedYear,
   ]);
 
   useEffect(() => {
@@ -721,6 +906,23 @@ const Timeline = React.memo(({ data }) => {
         <div className="selected-banner">
           選択中: <strong>{selectedItem.title}</strong>
           <button onClick={closeDetailPanel} className="close-selection">
+            ×
+          </button>
+        </div>
+      )}
+      {selectedYear && (
+        <div className="selected-year-banner">
+          年度表示中: <strong>{selectedYear}年</strong>
+          <button
+            onClick={() => {
+              setSelectedYear(null);
+              const svg = d3.select(svgRef.current);
+              const g = svg.select(".timeline-container");
+              g.selectAll(".year-line-group").remove();
+              svg.selectAll(".event-point").style("opacity", 0.8).attr("r", 3);
+            }}
+            className="close-selection"
+          >
             ×
           </button>
         </div>
@@ -847,7 +1049,7 @@ const Timeline = React.memo(({ data }) => {
           </button>
           <p className="controls-text">
             <strong>操作方法:</strong>
-            マウスホイールでズーム、ドラッグでパン、バークリックで詳細表示
+            マウスホイールでズーム、ドラッグでパン、バークリックで詳細表示、イベント点クリックで年度縦線表示
           </p>
         </div>
       </div>

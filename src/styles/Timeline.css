@@ -58,6 +58,21 @@
   z-index: 10;
 }
 
+.selected-year-banner {
+  position: absolute;
+  top: 50px;
+  left: 20px;
+  background: rgba(255, 107, 107, 0.9);
+  color: white;
+  padding: 8px 12px;
+  border-radius: 6px;
+  font-size: 0.85rem;
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  z-index: 10;
+}
+
 .timeline-content {
   display: flex;
   gap: 20px;
@@ -345,6 +360,57 @@
   font-weight: 500;
   color: #90ee90;
   font-size: 9px;
+}
+
+/* 年度縦線のスタイル */
+.year-line {
+  pointer-events: none;
+}
+
+.year-line-label {
+  pointer-events: none;
+  text-shadow: 1px 1px 2px rgba(255, 255, 255, 0.8);
+}
+
+/* 年齢ポイントのスタイル */
+.age-point {
+  transition: all 0.2s ease;
+  filter: drop-shadow(0 2px 4px rgba(0, 0, 0, 0.2));
+}
+
+.age-point:hover {
+  filter: drop-shadow(0 3px 6px rgba(0, 0, 0, 0.3));
+  transform: scale(1.1);
+}
+
+.age-label {
+  pointer-events: none;
+  text-shadow: 1px 1px 2px rgba(255, 255, 255, 0.8);
+}
+
+/* 年齢専用ツールチップ */
+.age-tooltip-content {
+  text-align: left;
+}
+
+.age-tooltip-header {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  margin-bottom: 6px;
+  padding-bottom: 4px;
+  border-bottom: 1px solid rgba(255, 255, 255, 0.2);
+}
+
+.age-tooltip-details {
+  font-size: 11px;
+  line-height: 1.4;
+}
+
+.birth-info {
+  font-size: 10px;
+  opacity: 0.8;
+  margin-top: 2px;
 }
 
 /* 小さなローディングスピナー */
