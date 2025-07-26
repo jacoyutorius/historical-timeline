@@ -17,7 +17,6 @@ import "../styles/Timeline.css";
 const Timeline = React.memo(({ data }) => {
   const svgRef = useRef();
   const containerRef = useRef();
-  const [selectedItem, setSelectedItem] = useState(null);
   const [selectedYear, setSelectedYear] = useState(null); // 選択された年度を管理
   const [renderError] = useState(null);
   const [isDrawing, setIsDrawing] = useState(false);
@@ -464,21 +463,6 @@ const Timeline = React.memo(({ data }) => {
 
           // ツールチップを非表示
           tooltip.style("opacity", 0);
-        })
-        .on("click", function (event, d) {
-          // 詳細パネルを表示
-          setSelectedItem(d);
-
-          // ツールチップを非表示
-          tooltip.style("opacity", 0);
-
-          // クリックされたバーを強調
-          barsGroup.selectAll(".person-bar").style("opacity", 0.3);
-
-          d3.select(this)
-            .style("opacity", 1)
-            .attr("stroke-width", 3)
-            .attr("stroke", "#333");
         });
 
       // バー内のテキストラベル（期間表示）
@@ -638,7 +622,7 @@ const Timeline = React.memo(({ data }) => {
             .style("left", left + "px")
             .style("top", top + "px");
         })
-        .on("mousemove", function (event, d) {
+        .on("mousemove", function (event) {
           // ツールチップの位置を動的に調整（マウスカーソルの右横）
           const tooltipWidth = 250;
           const tooltipHeight = 60;
@@ -887,19 +871,6 @@ const Timeline = React.memo(({ data }) => {
     }
   }, [dimensions]);
 
-  // 詳細パネルを閉じる関数（メモ化）
-  const closeDetailPanel = useCallback(() => {
-    setSelectedItem(null);
-
-    // 全てのバーのスタイルを元に戻す
-    const svg = d3.select(svgRef.current);
-    svg
-      .selectAll(".person-bar")
-      .style("opacity", 0.8)
-      .attr("stroke-width", 1)
-      .attr("stroke", "#fff");
-  }, []);
-
   return (
     <div ref={containerRef} className="timeline-wrapper">
       {/* ステータス表示（必要な場合のみ） */}
@@ -923,14 +894,7 @@ const Timeline = React.memo(({ data }) => {
           </button>
         </div>
       )}
-      {selectedItem && (
-        <div className="selected-banner">
-          選択中: <strong>{selectedItem.title}</strong>
-          <button onClick={closeDetailPanel} className="close-selection">
-            ×
-          </button>
-        </div>
-      )}
+
       {selectedYear && (
         <div className="selected-year-banner">
           年度表示中: <strong>{selectedYear}年</strong>
@@ -960,79 +924,6 @@ const Timeline = React.memo(({ data }) => {
             {/* D3.jsによる描画がここに追加される */}
           </svg>
         </div>
-
-        {selectedItem && (
-          <div className="detail-panel">
-            <div className="detail-panel-header">
-              <div className="detail-title">
-                <span className="detail-icon">
-                  {selectedItem.category === "people" ? "👤" : "🏛️"}
-                </span>
-                <h3>{selectedItem.title}</h3>
-                <span className="detail-category">
-                  ({selectedItem.category === "people" ? "人物" : "組織"})
-                </span>
-              </div>
-              <button onClick={closeDetailPanel} className="close-button">
-                ×
-              </button>
-            </div>
-
-            <div className="detail-panel-content">
-              <div className="detail-section">
-                <h4>基本情報</h4>
-                <p>
-                  <strong>活動期間:</strong> {selectedItem.start}年 -{" "}
-                  {selectedItem.end}年 ({selectedItem.end - selectedItem.start}
-                  年間)
-                </p>
-                {selectedItem.birth && (
-                  <p>
-                    <strong>生年月日:</strong> {selectedItem.birth}
-                  </p>
-                )}
-                {selectedItem.dead && (
-                  <p>
-                    <strong>没年月日:</strong> {selectedItem.dead}
-                  </p>
-                )}
-                {selectedItem.description && (
-                  <p>
-                    <strong>説明:</strong> {selectedItem.description}
-                  </p>
-                )}
-              </div>
-
-              {selectedItem.events && selectedItem.events.length > 0 && (
-                <div className="detail-section">
-                  <h4>主要な出来事</h4>
-                  <ul className="events-list">
-                    {selectedItem.events.map((event, index) => (
-                      <li key={index}>
-                        <span className="event-year">{event.start}年</span>
-                        <span className="event-content">{event.content}</span>
-                      </li>
-                    ))}
-                  </ul>
-                </div>
-              )}
-
-              {selectedItem.imageUrl && (
-                <div className="detail-section">
-                  <h4>画像</h4>
-                  <img
-                    src={selectedItem.imageUrl}
-                    alt={selectedItem.title}
-                    className="detail-image"
-                    onError={(e) => {
-                      e.target.style.display = "none";
-                    }}
-                  />
-                </div>
-              )}
-            </div>
-          </div>
-        )}
       </div>
 
       <div className="timeline-footer">
@@ -1070,7 +961,7 @@ const Timeline = React.memo(({ data }) => {
           </button>
           <p className="controls-text">
             <strong>操作方法:</strong>
-            マウスホイールでズーム、ドラッグでパン、バークリックで詳細表示、イベント点クリックで年度縦線表示
+            マウスホイールでズーム、ドラッグでパン、イベント点クリックで年度縦線表示
           </p>
         </div>
       </div>
