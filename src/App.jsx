@@ -122,7 +122,7 @@ const App = React.memo(() => {
   return (
     <div className="app">
       <header className="app-header">
-        <div className="header-content header-with-actions">
+        <div className="header-title-row">
           <div className="header-icon">
             <svg
               width="40"
@@ -168,19 +168,19 @@ const App = React.memo(() => {
             <h1>歴史タイムライン</h1>
             <p>歴史上の人物と組織の生涯・活動期間を視覚化</p>
           </div>
-          <div className="header-actions">
-            <button
-              className="data-selection-button"
-              onClick={() => setIsDataSelectionModalOpen(true)}
-              title="表示するデータを選択"
-            >
-              <span className="button-icon">⚙️</span>
-              <span className="button-text">データ選択</span>
-              <span className="selection-count">
-                ({selectedData.length}/{allData.length})
-              </span>
-            </button>
-          </div>
+        </div>
+        <div className="header-actions-row">
+          <button
+            className="data-selection-button"
+            onClick={() => setIsDataSelectionModalOpen(true)}
+            title="表示するデータを選択"
+          >
+            <span className="button-icon">⚙️</span>
+            <span className="button-text">データ選択</span>
+            <span className="selection-count">
+              ({selectedData.length}/{allData.length})
+            </span>
+          </button>
         </div>
       </header>
 
