@@ -18,6 +18,7 @@ const Timeline = React.memo(({ data }) => {
   const svgRef = useRef();
   const containerRef = useRef();
   const [selectedYear, setSelectedYear] = useState(null); // 選択された年度を管理
+  const [selectedYearEvents, setSelectedYearEvents] = useState([]); // 選択された年度のイベント
   const [renderError] = useState(null);
   const [isDrawing, setIsDrawing] = useState(false);
   const [drawError, setDrawError] = useState(null);
@@ -64,6 +65,35 @@ const Timeline = React.memo(({ data }) => {
     const birthYear = parseInt(birthYearMatch[1], 10);
     return eventYear - birthYear;
   }, []);
+
+  // 特定の年度のイベントを取得する関数
+  const getEventsForYear = useCallback(
+    (sortedData, year) => {
+      const eventsForYear = [];
+
+      sortedData.forEach((person) => {
+        if (person.events && person.events.length > 0) {
+          person.events.forEach((event) => {
+            if (event.start === year) {
+              eventsForYear.push({
+                ...event,
+                personTitle: person.title,
+                personCategory: person.category,
+                personBirth: person.birth,
+                age: person.birth ? calculateAge(person.birth, year) : null,
+              });
+            }
+          });
+        }
+      });
+
+      // イベントを人物名でソート
+      return eventsForYear.sort((a, b) =>
+        a.personTitle.localeCompare(b.personTitle)
+      );
+    },
+    [calculateAge]
+  );
 
   // 年度縦線と年齢ポイントを描画する関数
   const drawYearLine = useCallback(
@@ -622,7 +652,7 @@ const Timeline = React.memo(({ data }) => {
             .style("left", left + "px")
             .style("top", top + "px");
         })
-        .on("mousemove", function (event) {
+        .on("mousemove", function (event, d) {
           // ツールチップの位置を動的に調整（マウスカーソルの右横）
           const tooltipWidth = 250;
           const tooltipHeight = 60;
@@ -655,6 +685,10 @@ const Timeline = React.memo(({ data }) => {
 
           // 選択された年度を設定
           setSelectedYear(d.start);
+
+          // 選択された年度のイベントを設定
+          const yearEvents = getEventsForYear(sortedData, d.start);
+          setSelectedYearEvents(yearEvents);
 
           // ツールチップを非表示
           tooltip.style("opacity", 0);
@@ -765,6 +799,7 @@ const Timeline = React.memo(({ data }) => {
           event.target.classList.contains("timeline-svg")
         ) {
           setSelectedYear(null);
+          setSelectedYearEvents([]);
           g.selectAll(".year-line-group").remove();
           eventsGroup
             .selectAll(".event-point")
@@ -836,6 +871,7 @@ const Timeline = React.memo(({ data }) => {
     calculateAge,
     drawYearLine,
     selectedYear,
+    getEventsForYear,
   ]);
 
   useEffect(() => {
@@ -897,19 +933,49 @@ const Timeline = React.memo(({ data }) => {
 
       {selectedYear && (
         <div className="selected-year-banner">
-          年度表示中: <strong>{selectedYear}年</strong>
-          <button
-            onClick={() => {
-              setSelectedYear(null);
-              const svg = d3.select(svgRef.current);
-              const g = svg.select(".timeline-container");
-              g.selectAll(".year-line-group").remove();
-              svg.selectAll(".event-point").style("opacity", 0.8).attr("r", 3);
-            }}
-            className="close-selection"
-          >
-            ×
-          </button>
+          <div className="year-banner-header">
+            <span className="year-title">
+              年度表示中: <strong>{selectedYear}年</strong>
+            </span>
+            <button
+              onClick={() => {
+                setSelectedYear(null);
+                setSelectedYearEvents([]);
+                const svg = d3.select(svgRef.current);
+                const g = svg.select(".timeline-container");
+                g.selectAll(".year-line-group").remove();
+                svg
+                  .selectAll(".event-point")
+                  .style("opacity", 0.8)
+                  .attr("r", 3);
+              }}
+              className="close-selection"
+            >
+              ×
+            </button>
+          </div>
+          {selectedYearEvents.length > 0 && (
+            <div className="year-events-list">
+              <div className="events-header">この年の出来事:</div>
+              <div className="events-container">
+                {selectedYearEvents.map((event, index) => (
+                  <div key={index} className="year-event-item">
+                    <span className="event-person-icon">
+                      {event.personCategory === "people" ? "👤" : "🏛️"}
+                    </span>
+                    <span className="event-person-name">
+                      {event.personTitle}
+                    </span>
+                    {event.age !== null && (
+                      <span className="event-person-age">({event.age}歳)</span>
+                    )}
+                    <span className="event-separator">:</span>
+                    <span className="event-content-text">{event.content}</span>
+                  </div>
+                ))}
+              </div>
+            </div>
+          )}
         </div>
       )}
 
