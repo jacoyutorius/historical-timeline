@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from "react";
+import React, { useState, useEffect, useCallback } from "react";
 import Timeline from "./components/Timeline";
 import DataSelectionModal from "./components/DataSelectionModal";
 import { sampleData } from "./data/sampleData";
@@ -25,13 +25,13 @@ const App = React.memo(() => {
   }, [selectedData, loading, error]);
 
   // データ選択の処理
-  const handleDataSelection = (newSelectedData) => {
+  const handleDataSelection = useCallback((newSelectedData) => {
     setSelectedData(newSelectedData);
     setTimelineData(newSelectedData);
     setIsDataSelectionModalOpen(false);
-  };
+  }, []);
 
-  const loadData = async () => {
+  const loadData = useCallback(async () => {
     try {
       setLoading(true);
       setError(null);
@@ -70,7 +70,7 @@ const App = React.memo(() => {
       });
       setLoading(false);
     }
-  };
+  }, [selectedData]);
 
   if (loading) {
     return (

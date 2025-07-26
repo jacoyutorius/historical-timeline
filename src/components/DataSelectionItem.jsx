@@ -1,7 +1,7 @@
 import React, { useCallback } from "react";
 import "./DataSelectionItem.css";
 
-const DataSelectionItem = ({ item, isSelected, onToggle }) => {
+const DataSelectionItem = React.memo(({ item, isSelected, onToggle }) => {
   const handleClick = useCallback(() => {
     onToggle(item.title);
   }, [item.title, onToggle]);
@@ -130,6 +130,6 @@ const DataSelectionItem = ({ item, isSelected, onToggle }) => {
       </div>
     </div>
   );
-};
+});
 
 export default DataSelectionItem;
