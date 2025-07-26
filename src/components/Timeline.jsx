@@ -253,18 +253,52 @@ const Timeline = React.memo(({ data }) => {
           // ツールチップの内容を作成
           const tooltipContent = createTooltipContent(d);
 
-          // ツールチップを表示
+          // ツールチップを表示（マウスカーソルの右横）
+          const tooltipWidth = 300; // 推定ツールチップ幅
+          const tooltipHeight = 150; // 推定ツールチップ高さ
+
+          let left = event.pageX + 10;
+          let top = event.pageY;
+
+          // 右端チェック
+          if (left + tooltipWidth > window.innerWidth) {
+            left = event.pageX - tooltipWidth - 10;
+          }
+
+          // 上端・下端チェック
+          if (top < 0) {
+            top = 10;
+          } else if (top + tooltipHeight > window.innerHeight) {
+            top = window.innerHeight - tooltipHeight - 10;
+          }
+
           tooltip
             .html(tooltipContent)
             .style("opacity", 1)
-            .style("left", event.pageX + 15 + "px")
-            .style("top", event.pageY - 15 + "px");
+            .style("left", left + "px")
+            .style("top", top + "px");
         })
         .on("mousemove", function (event) {
-          // マウス移動に合わせてツールチップを移動
-          tooltip
-            .style("left", event.pageX + 15 + "px")
-            .style("top", event.pageY - 15 + "px");
+          // マウス移動に合わせてツールチップを移動（マウスカーソルの右横）
+          const tooltipWidth = 300;
+          const tooltipHeight = 150;
+
+          let left = event.pageX + 10;
+          let top = event.pageY;
+
+          // 右端チェック
+          if (left + tooltipWidth > window.innerWidth) {
+            left = event.pageX - tooltipWidth - 10;
+          }
+
+          // 上端・下端チェック
+          if (top < 0) {
+            top = 10;
+          } else if (top + tooltipHeight > window.innerHeight) {
+            top = window.innerHeight - tooltipHeight - 10;
+          }
+
+          tooltip.style("left", left + "px").style("top", top + "px");
         })
         .on("mouseout", function () {
           // バーのスタイルを元に戻す
@@ -410,16 +444,16 @@ const Timeline = React.memo(({ data }) => {
             </div>
           `;
 
-          // ツールチップの位置を動的に調整
+          // ツールチップの位置を動的に調整（マウスカーソルの右横）
           const tooltipWidth = 250; // 推定ツールチップ幅
           const tooltipHeight = 60; // 推定ツールチップ高さ
 
-          let left = event.pageX + 15;
-          let top = event.pageY - 15; // カーソルと同じ高さ付近
+          let left = event.pageX + 10;
+          let top = event.pageY; // カーソルと同じ高さ
 
           // 右端チェック
           if (left + tooltipWidth > window.innerWidth) {
-            left = event.pageX - tooltipWidth - 15;
+            left = event.pageX - tooltipWidth - 10;
           }
 
           // 上端・下端チェック
@@ -436,16 +470,16 @@ const Timeline = React.memo(({ data }) => {
             .style("top", top + "px");
         })
         .on("mousemove", function (event, d) {
-          // ツールチップの位置を動的に調整
+          // ツールチップの位置を動的に調整（マウスカーソルの右横）
           const tooltipWidth = 250;
           const tooltipHeight = 60;
 
-          let left = event.pageX + 15;
-          let top = event.pageY - 15; // カーソルと同じ高さ付近
+          let left = event.pageX + 10;
+          let top = event.pageY; // カーソルと同じ高さ
 
           // 右端チェック
           if (left + tooltipWidth > window.innerWidth) {
-            left = event.pageX - tooltipWidth - 15;
+            left = event.pageX - tooltipWidth - 10;
           }
 
           // 上端・下端チェック
