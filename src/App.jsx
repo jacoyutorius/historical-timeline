@@ -1,5 +1,6 @@
 import React, { useState, useEffect } from "react";
 import Timeline from "./components/Timeline";
+import DataSelectionModal from "./components/DataSelectionModal";
 import { sampleData } from "./data/sampleData";
 import "./App.css";
 
@@ -14,7 +15,7 @@ const App = React.memo(() => {
 
   useEffect(() => {
     loadData();
-  }, []);
+  }, []); // eslint-disable-line react-hooks/exhaustive-deps
 
   // selectedDataが変更されたときにtimelineDataを更新
   useEffect(() => {
@@ -24,6 +25,11 @@ const App = React.memo(() => {
   }, [selectedData, loading, error]);
 
   // データ選択の処理
+  const handleDataSelection = (newSelectedData) => {
+    setSelectedData(newSelectedData);
+    setTimelineData(newSelectedData);
+    setIsDataSelectionModalOpen(false);
+  };
 
   const loadData = async () => {
     try {
@@ -189,6 +195,15 @@ const App = React.memo(() => {
         {/* Timeline コンポーネント */}
         <Timeline data={timelineData} />
       </main>
+
+      {/* データ選択モーダル */}
+      <DataSelectionModal
+        isOpen={isDataSelectionModalOpen}
+        onClose={() => setIsDataSelectionModalOpen(false)}
+        allData={allData}
+        currentSelection={selectedData}
+        onApply={handleDataSelection}
+      />
     </div>
   );
 });
