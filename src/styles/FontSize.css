@@ -1,0 +1,81 @@
+/* フォントサイズ用CSS変数の定義 */
+:root {
+  /* デフォルトフォントサイズ（medium設定） */
+  --timeline-font-size-xs: 14px;
+  --timeline-font-size-sm: 15px;
+  --timeline-font-size-md: 16px;
+  --timeline-font-size-lg: 17px;
+  --timeline-font-size-xl: 18px;
+  --timeline-font-multiplier: 1.2;
+}
+
+/* フォントサイズ変更時のトランジション */
+* {
+  transition: font-size 0.2s ease;
+}
+
+/* レスポンシブフォントサイズ調整 */
+@media (max-width: 768px) {
+  :root {
+    /* モバイルでは少し小さめに調整 */
+    --timeline-font-size-xs: calc(var(--timeline-font-size-xs) * 0.9);
+    --timeline-font-size-sm: calc(var(--timeline-font-size-sm) * 0.9);
+    --timeline-font-size-md: calc(var(--timeline-font-size-md) * 0.9);
+    --timeline-font-size-lg: calc(var(--timeline-font-size-lg) * 0.9);
+    --timeline-font-size-xl: calc(var(--timeline-font-size-xl) * 0.9);
+  }
+}
+
+@media (max-width: 480px) {
+  :root {
+    /* 小さなモバイルではさらに調整 */
+    --timeline-font-size-xs: calc(var(--timeline-font-size-xs) * 0.8);
+    --timeline-font-size-sm: calc(var(--timeline-font-size-sm) * 0.8);
+    --timeline-font-size-md: calc(var(--timeline-font-size-md) * 0.8);
+    --timeline-font-size-lg: calc(var(--timeline-font-size-lg) * 0.8);
+    --timeline-font-size-xl: calc(var(--timeline-font-size-xl) * 0.8);
+  }
+}
+
+/* 高DPIディスプレイでの調整 */
+@media (-webkit-min-device-pixel-ratio: 2), (min-resolution: 192dpi) {
+  :root {
+    /* 高解像度ディスプレイでは少し大きめに */
+    --timeline-font-size-xs: calc(var(--timeline-font-size-xs) * 1.05);
+    --timeline-font-size-sm: calc(var(--timeline-font-size-sm) * 1.05);
+    --timeline-font-size-md: calc(var(--timeline-font-size-md) * 1.05);
+    --timeline-font-size-lg: calc(var(--timeline-font-size-lg) * 1.05);
+    --timeline-font-size-xl: calc(var(--timeline-font-size-xl) * 1.05);
+  }
+}
+
+/* アクセシビリティ: ユーザーがシステムレベルでフォントサイズを大きく設定している場合 */
+@media (prefers-reduced-motion: no-preference) {
+  * {
+    transition: font-size 0.2s ease;
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  * {
+    transition: none;
+  }
+}
+
+/* フォントサイズ変更時のレイアウト調整用のユーティリティクラス */
+.font-size-responsive {
+  font-size: var(--timeline-font-size-md);
+  line-height: calc(var(--timeline-font-multiplier) * 1.4);
+}
+
+.font-size-small {
+  font-size: var(--timeline-font-size-sm);
+}
+
+.font-size-large {
+  font-size: var(--timeline-font-size-lg);
+}
+
+.font-size-extra-large {
+  font-size: var(--timeline-font-size-xl);
+}

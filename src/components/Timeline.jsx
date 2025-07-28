@@ -12,6 +12,10 @@ import {
   calculateTimeRange,
   yearToDate,
 } from "../utils/timelineUtils";
+import {
+  getCurrentFontSize,
+  useFontSize,
+} from "../contexts/FontSizeContext.jsx";
 import "../styles/Timeline.css";
 
 const Timeline = React.memo(({ data }) => {
@@ -22,6 +26,9 @@ const Timeline = React.memo(({ data }) => {
   const [renderError] = useState(null);
   const [isDrawing, setIsDrawing] = useState(false);
   const [drawError, setDrawError] = useState(null);
+
+  // フォントサイズの変更を監視
+  const { fontSize, fontSizeMultiplier } = useFontSize();
 
   // データの前処理をメモ化
   const processedData = useMemo(() => {
@@ -131,7 +138,7 @@ const Timeline = React.memo(({ data }) => {
         .attr("x", lineX)
         .attr("y", -5)
         .attr("text-anchor", "middle")
-        .style("font-size", "14px")
+        .style("font-size", getCurrentFontSize("lg"))
         .style("font-weight", "bold")
         .style("fill", "#ff6b6b")
         .style("background", "white")
@@ -172,7 +179,7 @@ const Timeline = React.memo(({ data }) => {
               .attr("x", lineX + 12)
               .attr("y", pointY)
               .attr("dy", "0.35em")
-              .style("font-size", "11px")
+              .style("font-size", getCurrentFontSize("sm"))
               .style("font-weight", "bold")
               .style("fill", "#333")
               .style("background", "rgba(255, 255, 255, 0.8)")
@@ -366,7 +373,7 @@ const Timeline = React.memo(({ data }) => {
         .attr("y", 35)
         .style("text-anchor", "middle")
         .style("fill", "#666")
-        .style("font-size", "12px")
+        .style("font-size", getCurrentFontSize("md"))
         .text("年代");
 
       // Y軸の作成と描画
@@ -389,7 +396,7 @@ const Timeline = React.memo(({ data }) => {
         .attr("y", (d) => yScale(d.title) + yScale.bandwidth() / 2)
         .attr("dy", "0.35em")
         .style("text-anchor", "middle")
-        .style("font-size", "14px")
+        .style("font-size", getCurrentFontSize("lg"))
         .style("fill", (d) => colorScale(d.category))
         .text((d) => (d.category === "people" ? "👤" : "🏛️"));
 
@@ -507,7 +514,7 @@ const Timeline = React.memo(({ data }) => {
         .attr("dy", "0.35em")
         .style("text-anchor", "middle")
         .style("fill", "#333") // 黒色に変更
-        .style("font-size", "10px")
+        .style("font-size", getCurrentFontSize("sm"))
         .style("font-weight", "500")
         .style("pointer-events", "none") // マウスイベントを無効化
         .text((d) => {
@@ -537,7 +544,7 @@ const Timeline = React.memo(({ data }) => {
         .attr("dy", "0.35em")
         .style("text-anchor", "start")
         .style("fill", "#666")
-        .style("font-size", "9px")
+        .style("font-size", getCurrentFontSize("xs"))
         .style("pointer-events", "none")
         .text((d) => {
           if (d.birth && d.dead) {
@@ -827,7 +834,7 @@ const Timeline = React.memo(({ data }) => {
           .append("text")
           .attr("text-anchor", "middle")
           .attr("dy", "-20")
-          .style("font-size", "18px")
+          .style("font-size", getCurrentFontSize("xl"))
           .style("fill", "#dc3545")
           .style("font-weight", "bold")
           .text("⚠️ タイムラインの描画でエラーが発生しました");
@@ -836,7 +843,7 @@ const Timeline = React.memo(({ data }) => {
           .append("text")
           .attr("text-anchor", "middle")
           .attr("dy", "10")
-          .style("font-size", "14px")
+          .style("font-size", getCurrentFontSize("lg"))
           .style("fill", "#6c757d")
           .text(error.message || "データの読み込みに失敗しました");
 
@@ -844,7 +851,7 @@ const Timeline = React.memo(({ data }) => {
           .append("text")
           .attr("text-anchor", "middle")
           .attr("dy", "35")
-          .style("font-size", "12px")
+          .style("font-size", getCurrentFontSize("md"))
           .style("fill", "#6c757d")
           .text("ページを再読み込みしてください");
       }
@@ -861,6 +868,8 @@ const Timeline = React.memo(({ data }) => {
     drawYearLine,
     selectedYear,
     getEventsForYear,
+    fontSize,
+    fontSizeMultiplier,
   ]);
 
   useEffect(() => {

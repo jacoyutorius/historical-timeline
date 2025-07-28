@@ -1,14 +1,18 @@
 import React, { useState, useEffect, useCallback } from "react";
 import Timeline from "./components/Timeline";
 import DataSelectionModal from "./components/DataSelectionModal";
+import FontSizeSettings from "./components/FontSizeSettings";
+import { FontSizeProvider } from "./contexts/FontSizeContext.jsx";
 import { sampleData } from "./data/sampleData";
 import "./App.css";
+import "./styles/FontSize.css";
 
 const App = React.memo(() => {
   const [allData] = useState(sampleData); // 全データ（変更不可）
   const [selectedData, setSelectedData] = useState(sampleData); // 選択されたデータ
   const [isDataSelectionModalOpen, setIsDataSelectionModalOpen] =
-    useState(false); // モーダル表示状態
+    useState(false); // データ選択モーダル表示状態
+  const [isFontSizeSettingsOpen, setIsFontSizeSettingsOpen] = useState(false); // フォントサイズ設定モーダル表示状態
   const [timelineData, setTimelineData] = useState([]);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState(null);
@@ -120,91 +124,107 @@ const App = React.memo(() => {
   }
 
   return (
-    <div className="app">
-      <header className="app-header">
-        <div className="header-title-row">
-          <div className="header-icon">
-            <svg
-              width="40"
-              height="40"
-              viewBox="0 0 64 64"
-              fill="none"
-              xmlns="http://www.w3.org/2000/svg"
+    <FontSizeProvider>
+      <div className="app">
+        <header className="app-header">
+          <div className="header-title-row">
+            <div className="header-icon">
+              <svg
+                width="40"
+                height="40"
+                viewBox="0 0 64 64"
+                fill="none"
+                xmlns="http://www.w3.org/2000/svg"
+              >
+                <circle
+                  cx="32"
+                  cy="32"
+                  r="30"
+                  fill="url(#headerGradient)"
+                  stroke="#2c3e50"
+                  strokeWidth="2"
+                />
+                <line
+                  x1="12"
+                  y1="32"
+                  x2="52"
+                  y2="32"
+                  stroke="#2c3e50"
+                  strokeWidth="3"
+                />
+                <circle cx="18" cy="32" r="4" fill="#e74c3c" />
+                <circle cx="32" cy="32" r="4" fill="#3498db" />
+                <circle cx="46" cy="32" r="4" fill="#f39c12" />
+                <defs>
+                  <linearGradient
+                    id="headerGradient"
+                    x1="0%"
+                    y1="0%"
+                    x2="100%"
+                    y2="100%"
+                  >
+                    <stop offset="0%" stopColor="#f8f9fa" stopOpacity="1" />
+                    <stop offset="100%" stopColor="#e9ecef" stopOpacity="1" />
+                  </linearGradient>
+                </defs>
+              </svg>
+            </div>
+            <div className="header-text">
+              <h1>歴史タイムライン</h1>
+              <p>歴史上の人物と組織の生涯・活動期間を視覚化</p>
+            </div>
+          </div>
+          <div className="header-actions-row">
+            <button
+              className="font-size-button"
+              onClick={() => setIsFontSizeSettingsOpen(true)}
+              title="フォントサイズを調整"
             >
-              <circle
-                cx="32"
-                cy="32"
-                r="30"
-                fill="url(#headerGradient)"
-                stroke="#2c3e50"
-                strokeWidth="2"
-              />
-              <line
-                x1="12"
-                y1="32"
-                x2="52"
-                y2="32"
-                stroke="#2c3e50"
-                strokeWidth="3"
-              />
-              <circle cx="18" cy="32" r="4" fill="#e74c3c" />
-              <circle cx="32" cy="32" r="4" fill="#3498db" />
-              <circle cx="46" cy="32" r="4" fill="#f39c12" />
-              <defs>
-                <linearGradient
-                  id="headerGradient"
-                  x1="0%"
-                  y1="0%"
-                  x2="100%"
-                  y2="100%"
-                >
-                  <stop offset="0%" stopColor="#f8f9fa" stopOpacity="1" />
-                  <stop offset="100%" stopColor="#e9ecef" stopOpacity="1" />
-                </linearGradient>
-              </defs>
-            </svg>
+              <span className="button-icon">🔤</span>
+              <span className="button-text">フォントサイズ</span>
+            </button>
+            <button
+              className="data-selection-button"
+              onClick={() => setIsDataSelectionModalOpen(true)}
+              title="表示するデータを選択"
+            >
+              <span className="button-icon">⚙️</span>
+              <span className="button-text">データ選択</span>
+              <span className="selection-count">
+                ({selectedData.length}/{allData.length})
+              </span>
+            </button>
           </div>
-          <div className="header-text">
-            <h1>歴史タイムライン</h1>
-            <p>歴史上の人物と組織の生涯・活動期間を視覚化</p>
-          </div>
-        </div>
-        <div className="header-actions-row">
-          <button
-            className="data-selection-button"
-            onClick={() => setIsDataSelectionModalOpen(true)}
-            title="表示するデータを選択"
-          >
-            <span className="button-icon">⚙️</span>
-            <span className="button-text">データ選択</span>
-            <span className="selection-count">
-              ({selectedData.length}/{allData.length})
-            </span>
-          </button>
-        </div>
-      </header>
+        </header>
 
-      <main className="app-main">
-        {/* <div className="timeline-info">
-          <p>データ読み込み完了: {timelineData.length}件の項目</p>
-          <div className="performance-info">
-            <small>読み込み時間: 約0.8秒</small>
-          </div>
-        </div> */}
+        <main className="app-main">
+          {/* <div className="timeline-info">
+            <p>データ読み込み完了: {timelineData.length}件の項目</p>
+            <div className="performance-info">
+              <small>読み込み時間: 約0.8秒</small>
+            </div>
+          </div> */}
 
-        {/* Timeline コンポーネント */}
-        <Timeline data={timelineData} />
-      </main>
+          {/* Timeline コンポーネント */}
+          <Timeline data={timelineData} />
+        </main>
 
-      {/* データ選択モーダル */}
-      <DataSelectionModal
-        isOpen={isDataSelectionModalOpen}
-        onClose={() => setIsDataSelectionModalOpen(false)}
-        allData={allData}
-        currentSelection={selectedData}
-        onApply={handleDataSelection}
-      />
-    </div>
+        {/* フォントサイズ設定モーダル */}
+        <FontSizeSettings
+          isOpen={isFontSizeSettingsOpen}
+          onClose={() => setIsFontSizeSettingsOpen(false)}
+        />
+
+        {/* データ選択モーダル */}
+        <DataSelectionModal
+          isOpen={isDataSelectionModalOpen}
+          onClose={() => setIsDataSelectionModalOpen(false)}
+          allData={allData}
+          currentSelection={selectedData}
+          onApply={handleDataSelection}
+        />
+      </div>
+    </FontSizeProvider>
   );
 });
 
