@@ -396,9 +396,9 @@ const Timeline = React.memo(({ data }) => {
 
       // Y軸の作成と描画
       // フォントサイズに応じてtickPaddingを動的調整
-      const basePadding = 25;
+      const baseTickPadding = 25;
       const tickPaddingAdjustment = fontSizeMultiplier * 5;
-      const dynamicTickPadding = basePadding + tickPaddingAdjustment;
+      const dynamicTickPadding = baseTickPadding + tickPaddingAdjustment;
 
       const yAxis = d3
         .axisLeft(yScale)
