@@ -50,14 +50,27 @@ const Timeline = React.memo(({ data }) => {
     if (containerRef.current) {
       const containerRect = containerRef.current.getBoundingClientRect();
       const availableWidth = Math.max(800, window.innerWidth - 80);
-      const availableHeight = Math.max(400, window.innerHeight - 220); // 280→220に変更してより多くの高さを確保
+
+      // データ数とフォントサイズに応じて高さを動的調整
+      const dataCount = processedData.sortedData.length;
+      const baseHeight = Math.max(400, dataCount * 40); // 1項目あたり40px
+      const fontSizeHeightAdjustment = fontSizeMultiplier * 10; // フォントサイズに応じた調整
+      const dynamicHeight = baseHeight + dataCount * fontSizeHeightAdjustment;
+      const availableHeight = Math.min(dynamicHeight, window.innerHeight - 220);
 
       setDimensions({
         width: availableWidth - margin.left - margin.right,
         height: availableHeight - margin.top - margin.bottom,
       });
     }
-  }, [margin.left, margin.right, margin.top, margin.bottom]);
+  }, [
+    margin.left,
+    margin.right,
+    margin.top,
+    margin.bottom,
+    processedData.sortedData.length,
+    fontSizeMultiplier,
+  ]);
 
   const { width, height } = dimensions;
 
@@ -335,11 +348,16 @@ const Timeline = React.memo(({ data }) => {
         .range([0, width]);
 
       // Y軸スケール（人物の配置）の設定
+      // フォントサイズに応じて動的にpadding値を調整
+      const basePadding = 0.2;
+      const fontSizeAdjustment = fontSizeMultiplier * 0.1; // フォントサイズが大きいほどpadding増加
+      const dynamicPadding = Math.min(basePadding + fontSizeAdjustment, 0.5); // 最大0.5まで
+
       const yScale = d3
         .scaleBand()
         .domain(sortedData.map((d) => d.title))
         .range([0, height])
-        .padding(0.1);
+        .padding(dynamicPadding);
 
       // 色スケールの設定
       const colorScale = d3
@@ -377,7 +395,15 @@ const Timeline = React.memo(({ data }) => {
         .text("年代");
 
       // Y軸の作成と描画
-      const yAxis = d3.axisLeft(yScale).tickSize(0).tickPadding(25); // アイコン用のスペースを確保
+      // フォントサイズに応じてtickPaddingを動的調整
+      const basePadding = 25;
+      const tickPaddingAdjustment = fontSizeMultiplier * 5;
+      const dynamicTickPadding = basePadding + tickPaddingAdjustment;
+
+      const yAxis = d3
+        .axisLeft(yScale)
+        .tickSize(0)
+        .tickPadding(dynamicTickPadding);
 
       const yAxisGroup = g.append("g").attr("class", "y-axis").call(yAxis);
 
@@ -392,7 +418,7 @@ const Timeline = React.memo(({ data }) => {
         .enter()
         .append("text")
         .attr("class", "category-icon")
-        .attr("x", -20)
+        .attr("x", -20 - fontSizeMultiplier * 5) // フォントサイズに応じてアイコン位置調整
         .attr("y", (d) => yScale(d.title) + yScale.bandwidth() / 2)
         .attr("dy", "0.35em")
         .style("text-anchor", "middle")
