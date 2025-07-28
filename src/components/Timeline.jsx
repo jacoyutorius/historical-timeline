@@ -53,10 +53,10 @@ const Timeline = React.memo(({ data }) => {
 
       // データ数とフォントサイズに応じて高さを動的調整
       const dataCount = processedData.sortedData.length;
-      const baseHeight = Math.max(400, dataCount * 40); // 1項目あたり40px
-      const fontSizeHeightAdjustment = fontSizeMultiplier * 10; // フォントサイズに応じた調整
+      const baseHeight = Math.max(500, dataCount * 60); // 1項目あたり60px（40px→60px）
+      const fontSizeHeightAdjustment = fontSizeMultiplier * 15; // フォントサイズに応じた調整を増加
       const dynamicHeight = baseHeight + dataCount * fontSizeHeightAdjustment;
-      const availableHeight = Math.min(dynamicHeight, window.innerHeight - 220);
+      const availableHeight = Math.min(dynamicHeight, window.innerHeight - 180); // 上下マージンも調整
 
       setDimensions({
         width: availableWidth - margin.left - margin.right,
@@ -349,9 +349,9 @@ const Timeline = React.memo(({ data }) => {
 
       // Y軸スケール（人物の配置）の設定
       // フォントサイズに応じて動的にpadding値を調整
-      const basePadding = 0.2;
-      const fontSizeAdjustment = fontSizeMultiplier * 0.1; // フォントサイズが大きいほどpadding増加
-      const dynamicPadding = Math.min(basePadding + fontSizeAdjustment, 0.5); // 最大0.5まで
+      const basePadding = 0.4; // 基本padding値を0.2から0.4に増加
+      const fontSizeAdjustment = fontSizeMultiplier * 0.15; // フォントサイズ調整も少し増加
+      const dynamicPadding = Math.min(basePadding + fontSizeAdjustment, 0.7); // 最大0.7まで増加
 
       const yScale = d3
         .scaleBand()
