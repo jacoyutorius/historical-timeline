@@ -624,6 +624,135 @@ const Timeline = React.memo(({ data }) => {
       });
 
       // イベント点を描画
+      const eventPoints = eventsGroup
+        .selectAll(".event-point")
+        .data(allEvents)
+        .enter()
+        .append("circle")
+        .attr("class", "event-point")
+        .attr("cx", (d) => xScale(yearToDate(d.start)))
+        .attr("cy", (d) => d.yPosition)
+        .attr("r", 3)
+        .attr("fill", (d) =>
+          d.personCategory === "people" ? "#e74c3c" : "#f39c12"
+        )
+        .attr("stroke", "#fff")
+        .attr("stroke-width", 1.5)
+        .style("cursor", "pointer")
+        .style("opacity", 0.8)
+        .on("mouseover", function (event, d) {
+          d3.select(this).attr("r", 5).style("opacity", 1);
+
+          // イベント専用ツールチップを表示（年齢情報付き）
+          const age =
+            d.personCategory === "people" && d.personBirth
+              ? calculateAge(d.personBirth, d.start)
+              : null;
+
+          const eventTooltipContent = `
+            <div class="event-tooltip-content">
+              <div class="event-title">
+                <span class="event-icon">${
+                  d.personCategory === "people" ? "📅" : "🏛️"
+                }</span>
+                <strong>${d.content}</strong>
+              </div>
+              <div class="event-details">
+                <span class="event-year">${d.start}年</span> • 
+                <span class="event-person">${d.personTitle}</span>
+                ${
+                  age !== null
+                    ? `<br><span class="event-age">当時${age}歳</span>`
+                    : ""
+                }
+              </div>
+            </div>
+          `;
+
+          // ツールチップの位置を動的に調整（マウスカーソルの右横）
+          const tooltipWidth = 250; // 推定ツールチップ幅
+          const tooltipHeight = 60; // 推定ツールチップ高さ
+
+          let left = event.pageX + 10;
+          let top = event.pageY; // カーソルと同じ高さ
+
+          // 右端チェック
+          if (left + tooltipWidth > window.innerWidth) {
+            left = event.pageX - tooltipWidth - 10;
+          }
+
+          // 上端・下端チェック
+          if (top < 0) {
+            top = 10;
+          } else if (top + tooltipHeight > window.innerHeight) {
+            top = window.innerHeight - tooltipHeight - 10;
+          }
+
+          tooltip
+            .html(eventTooltipContent)
+            .style("opacity", 1)
+            .style("left", left + "px")
+            .style("top", top + "px");
+        })
+        .on("mousemove", function (event, d) {
+          // ツールチップの位置を動的に調整（マウスカーソルの右横）
+          const tooltipWidth = 250;
+          const tooltipHeight = 60;
+
+          let left = event.pageX + 10;
+          let top = event.pageY; // カーソルと同じ高さ
+
+          // 右端チェック
+          if (left + tooltipWidth > window.innerWidth) {
+            left = event.pageX - tooltipWidth - 10;
+          }
+
+          // 上端・下端チェック
+          if (top < 0) {
+            top = 10;
+          } else if (top + tooltipHeight > window.innerHeight) {
+            top = window.innerHeight - tooltipHeight - 10;
+          }
+
+          tooltip.style("left", left + "px").style("top", top + "px");
+        })
+        .on("mouseout", function () {
+          d3.select(this).attr("r", 3).style("opacity", 0.8);
+
+          tooltip.style("opacity", 0);
+        })
+        .on("click", function (event, d) {
+          // イベント点をクリックしたときの処理
+          event.stopPropagation(); // イベントの伝播を停止
+
+          // 選択された年度を設定
+          setSelectedYear(d.start);
+
+          // 選択された年度のイベントを設定
+          const yearEvents = getEventsForYear(sortedData, d.start);
+          setSelectedYearEvents(yearEvents);
+
+          // ツールチップを非表示
+          tooltip.style("opacity", 0);
+
+          // 現在のズーム状態を取得
+          const currentTransform = d3.zoomTransform(svg.node());
+
+          // 年度縦線と年齢ポイントを描画
+          drawYearLine(
+            svg,
+            g,
+            xScale,
+            yScale,
+            sortedData,
+            d.start,
+            currentTransform
+          );
+
+          // クリックされたイベント点を強調
+          eventsGroup.selectAll(".event-point").style("opacity", 0.5);
+          d3.select(this).style("opacity", 1).attr("r", 5);
+        });
 
       // グリッドラインの追加（オプション）
 
