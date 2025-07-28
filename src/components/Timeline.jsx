@@ -23,7 +23,7 @@ const Timeline = React.memo(({ data }) => {
   const containerRef = useRef();
   const [selectedYear, setSelectedYear] = useState(null); // 選択された年度を管理
   const [selectedYearEvents, setSelectedYearEvents] = useState([]); // 選択された年度のイベント
-  const [renderError] = useState(null);
+
   const [isDrawing, setIsDrawing] = useState(false);
   const [drawError, setDrawError] = useState(null);
 
@@ -48,15 +48,20 @@ const Timeline = React.memo(({ data }) => {
 
   const updateDimensions = useCallback(() => {
     if (containerRef.current) {
-      const containerRect = containerRef.current.getBoundingClientRect();
       const availableWidth = Math.max(800, window.innerWidth - 80);
 
       // データ数とフォントサイズに応じて高さを動的調整
       const dataCount = processedData.sortedData.length;
-      const baseHeight = Math.max(600, dataCount * 80); // 1項目あたり80px（さらに増加）
-      const fontSizeHeightAdjustment = fontSizeMultiplier * 20; // フォントサイズに応じた調整をさらに増加
-      const dynamicHeight = baseHeight + dataCount * fontSizeHeightAdjustment;
-      const availableHeight = Math.min(dynamicHeight, window.innerHeight - 150); // 上下マージンをさらに調整
+      const desiredRowSpacing = 60; // 行間隔を60pxに大幅増加
+      const baseRowHeight = 80; // 基本の行の高さを80pxに増加
+      const fontSizeRowAdjustment = fontSizeMultiplier * 20; // フォントサイズによる行高さ調整をさらに増加
+      const actualRowHeight = baseRowHeight + fontSizeRowAdjustment;
+
+      // 必要な高さ = (行の高さ × データ数) + (間隔 × (データ数 - 1))
+      const calculatedHeight =
+        actualRowHeight * dataCount + desiredRowSpacing * (dataCount - 1);
+      const baseHeight = Math.max(1200, calculatedHeight); // 最小高さを1200pxに大幅増加
+      const availableHeight = Math.min(baseHeight, window.innerHeight - 50); // 上下マージンを50pxに削減してより多くのスペース確保
 
       setDimensions({
         width: availableWidth - margin.left - margin.right,
@@ -348,10 +353,20 @@ const Timeline = React.memo(({ data }) => {
         .range([0, width]);
 
       // Y軸スケール（人物の配置）の設定
-      // フォントサイズに応じて動的にpadding値を調整
-      const basePadding = 0.6; // 基本padding値をさらに大幅に増加
-      const fontSizeAdjustment = fontSizeMultiplier * 0.2; // フォントサイズ調整も増加
-      const dynamicPadding = Math.min(basePadding + fontSizeAdjustment, 0.8); // 最大0.8まで増加
+      // 人物間の間隔を20px程度に設定するための計算
+      const dataCount = sortedData.length;
+      const desiredSpacing = 60; // 人物間の間隔を60pxに大幅増加
+      const totalSpacing = desiredSpacing * (dataCount - 1); // 全体の間隔
+      const availableHeightForBands = height - totalSpacing; // バンド用の高さ
+      const bandHeight = availableHeightForBands / dataCount; // 1つのバンドの高さ
+
+      // paddingの比率を計算（間隔 / (バンド高さ + 間隔)）
+      const calculatedPadding = desiredSpacing / (bandHeight + desiredSpacing);
+      const fontSizeAdjustment = fontSizeMultiplier * 0.15; // フォントサイズによる調整をさらに増加
+      const dynamicPadding = Math.min(
+        calculatedPadding + fontSizeAdjustment,
+        0.9
+      );
 
       const yScale = d3
         .scaleBand()
@@ -609,135 +624,6 @@ const Timeline = React.memo(({ data }) => {
       });
 
       // イベント点を描画
-      const eventPoints = eventsGroup
-        .selectAll(".event-point")
-        .data(allEvents)
-        .enter()
-        .append("circle")
-        .attr("class", "event-point")
-        .attr("cx", (d) => xScale(yearToDate(d.start)))
-        .attr("cy", (d) => d.yPosition)
-        .attr("r", 3)
-        .attr("fill", (d) =>
-          d.personCategory === "people" ? "#e74c3c" : "#f39c12"
-        )
-        .attr("stroke", "#fff")
-        .attr("stroke-width", 1.5)
-        .style("cursor", "pointer")
-        .style("opacity", 0.8)
-        .on("mouseover", function (event, d) {
-          d3.select(this).attr("r", 5).style("opacity", 1);
-
-          // イベント専用ツールチップを表示（年齢情報付き）
-          const age =
-            d.personCategory === "people" && d.personBirth
-              ? calculateAge(d.personBirth, d.start)
-              : null;
-
-          const eventTooltipContent = `
-            <div class="event-tooltip-content">
-              <div class="event-title">
-                <span class="event-icon">${
-                  d.personCategory === "people" ? "📅" : "🏛️"
-                }</span>
-                <strong>${d.content}</strong>
-              </div>
-              <div class="event-details">
-                <span class="event-year">${d.start}年</span> • 
-                <span class="event-person">${d.personTitle}</span>
-                ${
-                  age !== null
-                    ? `<br><span class="event-age">当時${age}歳</span>`
-                    : ""
-                }
-              </div>
-            </div>
-          `;
-
-          // ツールチップの位置を動的に調整（マウスカーソルの右横）
-          const tooltipWidth = 250; // 推定ツールチップ幅
-          const tooltipHeight = 60; // 推定ツールチップ高さ
-
-          let left = event.pageX + 10;
-          let top = event.pageY; // カーソルと同じ高さ
-
-          // 右端チェック
-          if (left + tooltipWidth > window.innerWidth) {
-            left = event.pageX - tooltipWidth - 10;
-          }
-
-          // 上端・下端チェック
-          if (top < 0) {
-            top = 10;
-          } else if (top + tooltipHeight > window.innerHeight) {
-            top = window.innerHeight - tooltipHeight - 10;
-          }
-
-          tooltip
-            .html(eventTooltipContent)
-            .style("opacity", 1)
-            .style("left", left + "px")
-            .style("top", top + "px");
-        })
-        .on("mousemove", function (event, d) {
-          // ツールチップの位置を動的に調整（マウスカーソルの右横）
-          const tooltipWidth = 250;
-          const tooltipHeight = 60;
-
-          let left = event.pageX + 10;
-          let top = event.pageY; // カーソルと同じ高さ
-
-          // 右端チェック
-          if (left + tooltipWidth > window.innerWidth) {
-            left = event.pageX - tooltipWidth - 10;
-          }
-
-          // 上端・下端チェック
-          if (top < 0) {
-            top = 10;
-          } else if (top + tooltipHeight > window.innerHeight) {
-            top = window.innerHeight - tooltipHeight - 10;
-          }
-
-          tooltip.style("left", left + "px").style("top", top + "px");
-        })
-        .on("mouseout", function () {
-          d3.select(this).attr("r", 3).style("opacity", 0.8);
-
-          tooltip.style("opacity", 0);
-        })
-        .on("click", function (event, d) {
-          // イベント点をクリックしたときの処理
-          event.stopPropagation(); // イベントの伝播を停止
-
-          // 選択された年度を設定
-          setSelectedYear(d.start);
-
-          // 選択された年度のイベントを設定
-          const yearEvents = getEventsForYear(sortedData, d.start);
-          setSelectedYearEvents(yearEvents);
-
-          // ツールチップを非表示
-          tooltip.style("opacity", 0);
-
-          // 現在のズーム状態を取得
-          const currentTransform = d3.zoomTransform(svg.node());
-
-          // 年度縦線と年齢ポイントを描画
-          drawYearLine(
-            svg,
-            g,
-            xScale,
-            yScale,
-            sortedData,
-            d.start,
-            currentTransform
-          );
-
-          // クリックされたイベント点を強調
-          eventsGroup.selectAll(".event-point").style("opacity", 0.5);
-          d3.select(this).style("opacity", 1).attr("r", 5);
-        });
 
       // グリッドラインの追加（オプション）
 
